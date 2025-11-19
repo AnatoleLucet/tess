@@ -5,140 +5,188 @@ package tess
 */
 import "C"
 
-// Value represents a dimension with a unit
-type Value struct {
-	Value float32
-	Unit  Unit
+type DisplayType int
+
+const (
+	Flex DisplayType = iota
+	Contents
+	None
+)
+
+func (t DisplayType) String() string {
+	switch t {
+	case Flex:
+		return "flex"
+	case Contents:
+		return "contents"
+	case None:
+		return "none"
+	}
+
+	return "unknown"
 }
 
-// Predefined Value constants
-var (
-	ValueAuto      = Value{Unit: UnitAuto}
-	ValueUndefined = Value{Unit: UnitUndefined}
-	ValueZero      = Value{Value: 0, Unit: UnitPoint}
-)
+type FlexDirection int
 
-// Align constants
 const (
-	AlignAuto         = int(C.YGAlignAuto)
-	AlignFlexStart    = int(C.YGAlignFlexStart)
-	AlignCenter       = int(C.YGAlignCenter)
-	AlignFlexEnd      = int(C.YGAlignFlexEnd)
-	AlignStretch      = int(C.YGAlignStretch)
-	AlignBaseline     = int(C.YGAlignBaseline)
-	AlignSpaceBetween = int(C.YGAlignSpaceBetween)
-	AlignSpaceAround  = int(C.YGAlignSpaceAround)
-	AlignSpaceEvenly  = int(C.YGAlignSpaceEvenly)
+	Column FlexDirection = iota
+	ColumnReverse
+	Row
+	RowReverse
 )
 
-// BoxSizing constants
+func (a FlexDirection) String() string {
+	switch a {
+	case Column:
+		return "column"
+	case ColumnReverse:
+		return "column-reverse"
+	case Row:
+		return "row"
+	case RowReverse:
+		return "row-reverse"
+	}
+
+	return "unknown"
+}
+
+type FlexAlignment int
+
 const (
-	BoxSizingBorderBox  = int(C.YGBoxSizingBorderBox)
-	BoxSizingContentBox = int(C.YGBoxSizingContentBox)
+	AlignAuto     FlexAlignment = iota // for AlignItems only
+	AlignStretch                       // for AlignItems only
+	AlignBaseline                      // for AlignItems only
+	AlignStart
+	AlignEnd
+	AlignCenter
+	AlignSpaceBetween
+	AlignSpaceAround
+	AlignSpaceEvenly
 )
 
-// Dimension constants
+func (a FlexAlignment) String() string {
+	switch a {
+	case AlignAuto:
+		return "auto"
+	case AlignStart:
+		return "flex-start"
+	case AlignCenter:
+		return "center"
+	case AlignEnd:
+		return "flex-end"
+	case AlignStretch:
+		return "stretch"
+	case AlignBaseline:
+		return "baseline"
+	case AlignSpaceBetween:
+		return "space-between"
+	case AlignSpaceAround:
+		return "space-around"
+	case AlignSpaceEvenly:
+		return "space-evenly"
+	}
+
+	return "unknown"
+}
+
+type FlexWrap int
+
 const (
-	DimensionWidth  = int(C.YGDimensionWidth)
-	DimensionHeight = int(C.YGDimensionHeight)
+	NoWrap FlexWrap = iota
+	Wrap
+	WrapReverse
 )
 
-// Direction constants
+func (t FlexWrap) String() string {
+	switch t {
+	case NoWrap:
+		return "no-wrap"
+	case Wrap:
+		return "wrap"
+	case WrapReverse:
+		return "wrap-reverse"
+	}
+
+	return "unknown"
+}
+
+type PositionType int
+
 const (
-	DirectionInherit = int(C.YGDirectionInherit)
-	DirectionLTR     = int(C.YGDirectionLTR)
-	DirectionRTL     = int(C.YGDirectionRTL)
+	Static PositionType = iota
+	Relative
+	Absolute
 )
 
-// Display constants
+func (t PositionType) String() string {
+	switch t {
+	case Static:
+		return "static"
+	case Relative:
+		return "relative"
+	case Absolute:
+		return "absolute"
+	}
+
+	return "unknown"
+}
+
+type DirectionType int
+
 const (
-	DisplayFlex     = int(C.YGDisplayFlex)
-	DisplayNone     = int(C.YGDisplayNone)
-	DisplayContents = int(C.YGDisplayContents)
+	Inherit DirectionType = iota
+	LTR
+	RTL
 )
 
-// Edge constants
+func (t DirectionType) String() string {
+	switch t {
+	case Inherit:
+		return "inherit"
+	case LTR:
+		return "ltr"
+	case RTL:
+		return "rtl"
+	}
+
+	return "unknown"
+}
+
+type OverflowType int
+
 const (
-	EdgeLeft       = int(C.YGEdgeLeft)
-	EdgeTop        = int(C.YGEdgeTop)
-	EdgeRight      = int(C.YGEdgeRight)
-	EdgeBottom     = int(C.YGEdgeBottom)
-	EdgeStart      = int(C.YGEdgeStart)
-	EdgeEnd        = int(C.YGEdgeEnd)
-	EdgeHorizontal = int(C.YGEdgeHorizontal)
-	EdgeVertical   = int(C.YGEdgeVertical)
-	EdgeAll        = int(C.YGEdgeAll)
+	Visible OverflowType = iota
+	Hidden
+	Scroll
 )
 
-// FlexDirection constants
+func (t OverflowType) String() string {
+	switch t {
+	case Visible:
+		return "visible"
+	case Hidden:
+		return "hidden"
+	case Scroll:
+		return "scroll"
+	}
+
+	return "unknown"
+}
+
+type BoxSizingType int
+
 const (
-	FlexDirectionColumn        = int(C.YGFlexDirectionColumn)
-	FlexDirectionColumnReverse = int(C.YGFlexDirectionColumnReverse)
-	FlexDirectionRow           = int(C.YGFlexDirectionRow)
-	FlexDirectionRowReverse    = int(C.YGFlexDirectionRowReverse)
+	ContentBox BoxSizingType = iota
+	BorderBox
 )
 
-// Gutter constants
-const (
-	GutterColumn = int(C.YGGutterColumn)
-	GutterRow    = int(C.YGGutterRow)
-	GutterAll    = int(C.YGGutterAll)
-)
+func (t BoxSizingType) String() string {
+	switch t {
+	case ContentBox:
+		return "content-box"
+	case BorderBox:
+		return "border-box"
+	}
 
-// Justify constants
-const (
-	JustifyFlexStart    = int(C.YGJustifyFlexStart)
-	JustifyCenter       = int(C.YGJustifyCenter)
-	JustifyFlexEnd      = int(C.YGJustifyFlexEnd)
-	JustifySpaceBetween = int(C.YGJustifySpaceBetween)
-	JustifySpaceAround  = int(C.YGJustifySpaceAround)
-	JustifySpaceEvenly  = int(C.YGJustifySpaceEvenly)
-)
-
-// MeasureMode constants
-const (
-	MeasureModeUndefined = int(C.YGMeasureModeUndefined)
-	MeasureModeExactly   = int(C.YGMeasureModeExactly)
-	MeasureModeAtMost    = int(C.YGMeasureModeAtMost)
-)
-
-// NodeType constants
-const (
-	NodeTypeDefault = int(C.YGNodeTypeDefault)
-	NodeTypeText    = int(C.YGNodeTypeText)
-)
-
-// Overflow constants
-const (
-	OverflowVisible = int(C.YGOverflowVisible)
-	OverflowHidden  = int(C.YGOverflowHidden)
-	OverflowScroll  = int(C.YGOverflowScroll)
-)
-
-// PositionType constants
-const (
-	PositionTypeStatic   = int(C.YGPositionTypeStatic)
-	PositionTypeRelative = int(C.YGPositionTypeRelative)
-	PositionTypeAbsolute = int(C.YGPositionTypeAbsolute)
-)
-
-// Unit type for Value
-type Unit int
-
-// Unit constants
-const (
-	UnitUndefined  Unit = Unit(C.YGUnitUndefined)
-	UnitPoint      Unit = Unit(C.YGUnitPoint)
-	UnitPercent    Unit = Unit(C.YGUnitPercent)
-	UnitAuto       Unit = Unit(C.YGUnitAuto)
-	UnitMaxContent Unit = Unit(C.YGUnitMaxContent)
-	UnitFitContent Unit = Unit(C.YGUnitFitContent)
-	UnitStretch    Unit = Unit(C.YGUnitStretch)
-)
-
-// Wrap constants
-const (
-	WrapNoWrap      = int(C.YGWrapNoWrap)
-	WrapWrap        = int(C.YGWrapWrap)
-	WrapWrapReverse = int(C.YGWrapWrapReverse)
-)
+	return "unknown"
+}

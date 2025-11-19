@@ -5,469 +5,753 @@ package tess
 */
 import "C"
 
-// CopyStyle copies the style from srcNode to the current node
-func (n *Node) CopyStyle(srcNode *Node) {
-	C.YGNodeCopyStyle(n.node, srcNode.node)
+type Style struct {
+	// Display & Layout
+	Display        DisplayType
+	FlexDirection  FlexDirection
+	JustifyContent FlexAlignment
+	AlignItems     FlexAlignment
+	AlignSelf      FlexAlignment
+	AlignContent   FlexAlignment
+	FlexWrap       FlexWrap
+	Direction      DirectionType
+
+	// Dimensions
+	Width, Height       Value
+	MinWidth, MinHeight Value
+	MaxWidth, MaxHeight Value
+	AspectRatio         float32
+
+	// Spacing
+	Padding Edges
+	Margin  Edges
+	Border  Edges
+	Gap     Gap
+
+	// Flex item properties
+	FlexGrow   float32
+	FlexShrink float32
+	FlexBasis  Value
+
+	// Positioning
+	Position                 PositionType
+	Top, Right, Bottom, Left Value
+
+	// Overflow
+	Overflow OverflowType
+
+	// Box Sizing
+	BoxSizing BoxSizingType
 }
 
-// Direction
-
-func (n *Node) SetDirection(direction int) {
-	C.YGNodeStyleSetDirection(n.node, C.YGDirection(direction))
+func (n *Node) SetDisplay(display DisplayType) *Node {
+	ygDisplay, _ := toYGDisplay(display)
+	C.YGNodeStyleSetDisplay(n.node, ygDisplay)
+	return n
 }
 
-func (n *Node) GetDirection() int {
-	return int(C.YGNodeStyleGetDirection(n.node))
+func (n *Node) SetFlexDirection(direction FlexDirection) *Node {
+	ygDirection, _ := toYGFlexDirection(direction)
+	C.YGNodeStyleSetFlexDirection(n.node, ygDirection)
+	return n
 }
 
-// FlexDirection
-
-func (n *Node) SetFlexDirection(direction int) {
-	C.YGNodeStyleSetFlexDirection(n.node, C.YGFlexDirection(direction))
+func (n *Node) SetJustifyContent(justify FlexAlignment) *Node {
+	ygJustify, _ := toYGJustify(justify)
+	C.YGNodeStyleSetJustifyContent(n.node, ygJustify)
+	return n
 }
 
-func (n *Node) GetFlexDirection() int {
-	return int(C.YGNodeStyleGetFlexDirection(n.node))
+func (n *Node) SetAlignItems(align FlexAlignment) *Node {
+	ygAlign, _ := toYGAlign(align)
+	C.YGNodeStyleSetAlignItems(n.node, ygAlign)
+	return n
 }
 
-// JustifyContent
-
-func (n *Node) SetJustifyContent(justify int) {
-	C.YGNodeStyleSetJustifyContent(n.node, C.YGJustify(justify))
+func (n *Node) SetAlignSelf(align FlexAlignment) *Node {
+	ygAlign, _ := toYGAlign(align)
+	C.YGNodeStyleSetAlignSelf(n.node, ygAlign)
+	return n
 }
 
-func (n *Node) GetJustifyContent() int {
-	return int(C.YGNodeStyleGetJustifyContent(n.node))
+func (n *Node) SetAlignContent(align FlexAlignment) *Node {
+	ygAlign, _ := toYGAlign(align)
+	C.YGNodeStyleSetAlignContent(n.node, ygAlign)
+	return n
 }
 
-// AlignContent
-
-func (n *Node) SetAlignContent(align int) {
-	C.YGNodeStyleSetAlignContent(n.node, C.YGAlign(align))
+func (n *Node) SetFlexWrap(wrap FlexWrap) *Node {
+	ygWrap, _ := toYGWrap(wrap)
+	C.YGNodeStyleSetFlexWrap(n.node, ygWrap)
+	return n
 }
 
-func (n *Node) GetAlignContent() int {
-	return int(C.YGNodeStyleGetAlignContent(n.node))
+func (n *Node) SetDirection(direction DirectionType) *Node {
+	ygDirection, _ := toYGDirection(direction)
+	C.YGNodeStyleSetDirection(n.node, ygDirection)
+	return n
 }
 
-// AlignItems
-
-func (n *Node) SetAlignItems(align int) {
-	C.YGNodeStyleSetAlignItems(n.node, C.YGAlign(align))
+func (n *Node) SetWidth(width Value) *Node {
+	switch width.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetWidth(n.node, C.float(width.value))
+	case UnitPercent:
+		C.YGNodeStyleSetWidthPercent(n.node, C.float(width.value))
+	case UnitAuto:
+		C.YGNodeStyleSetWidthAuto(n.node)
+	case UnitMaxContent:
+		C.YGNodeStyleSetWidthMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetWidthFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetWidthStretch(n.node)
+	}
+	return n
 }
 
-func (n *Node) GetAlignItems() int {
-	return int(C.YGNodeStyleGetAlignItems(n.node))
+func (n *Node) SetHeight(height Value) *Node {
+	switch height.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetHeight(n.node, C.float(height.value))
+	case UnitPercent:
+		C.YGNodeStyleSetHeightPercent(n.node, C.float(height.value))
+	case UnitAuto:
+		C.YGNodeStyleSetHeightAuto(n.node)
+	case UnitMaxContent:
+		C.YGNodeStyleSetHeightMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetHeightFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetHeightStretch(n.node)
+	}
+	return n
 }
 
-// AlignSelf
-
-func (n *Node) SetAlignSelf(align int) {
-	C.YGNodeStyleSetAlignSelf(n.node, C.YGAlign(align))
+func (n *Node) SetMinWidth(minWidth Value) *Node {
+	switch minWidth.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetMinWidth(n.node, C.float(minWidth.value))
+	case UnitPercent:
+		C.YGNodeStyleSetMinWidthPercent(n.node, C.float(minWidth.value))
+	case UnitMaxContent:
+		C.YGNodeStyleSetMinWidthMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetMinWidthFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetMinWidthStretch(n.node)
+	}
+	return n
 }
 
-func (n *Node) GetAlignSelf() int {
-	return int(C.YGNodeStyleGetAlignSelf(n.node))
+func (n *Node) SetMinHeight(minHeight Value) *Node {
+	switch minHeight.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetMinHeight(n.node, C.float(minHeight.value))
+	case UnitPercent:
+		C.YGNodeStyleSetMinHeightPercent(n.node, C.float(minHeight.value))
+	case UnitMaxContent:
+		C.YGNodeStyleSetMinHeightMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetMinHeightFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetMinHeightStretch(n.node)
+	}
+	return n
 }
 
-// PositionType
-
-func (n *Node) SetPositionType(positionType int) {
-	C.YGNodeStyleSetPositionType(n.node, C.YGPositionType(positionType))
+func (n *Node) SetMaxWidth(maxWidth Value) *Node {
+	switch maxWidth.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetMaxWidth(n.node, C.float(maxWidth.value))
+	case UnitPercent:
+		C.YGNodeStyleSetMaxWidthPercent(n.node, C.float(maxWidth.value))
+	case UnitMaxContent:
+		C.YGNodeStyleSetMaxWidthMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetMaxWidthFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetMaxWidthStretch(n.node)
+	}
+	return n
 }
 
-func (n *Node) GetPositionType() int {
-	return int(C.YGNodeStyleGetPositionType(n.node))
+func (n *Node) SetMaxHeight(maxHeight Value) *Node {
+	switch maxHeight.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetMaxHeight(n.node, C.float(maxHeight.value))
+	case UnitPercent:
+		C.YGNodeStyleSetMaxHeightPercent(n.node, C.float(maxHeight.value))
+	case UnitMaxContent:
+		C.YGNodeStyleSetMaxHeightMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetMaxHeightFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetMaxHeightStretch(n.node)
+	}
+	return n
 }
 
-// FlexWrap
-
-func (n *Node) SetFlexWrap(wrap int) {
-	C.YGNodeStyleSetFlexWrap(n.node, C.YGWrap(wrap))
+func (n *Node) SetAspectRatio(aspectRatio float32) *Node {
+	C.YGNodeStyleSetAspectRatio(n.node, C.float(aspectRatio))
+	return n
 }
 
-func (n *Node) GetFlexWrap() int {
-	return int(C.YGNodeStyleGetFlexWrap(n.node))
-}
-
-// Overflow
-
-func (n *Node) SetOverflow(overflow int) {
-	C.YGNodeStyleSetOverflow(n.node, C.YGOverflow(overflow))
-}
-
-func (n *Node) GetOverflow() int {
-	return int(C.YGNodeStyleGetOverflow(n.node))
-}
-
-// Display
-
-func (n *Node) SetDisplay(display int) {
-	C.YGNodeStyleSetDisplay(n.node, C.YGDisplay(display))
-}
-
-func (n *Node) GetDisplay() int {
-	return int(C.YGNodeStyleGetDisplay(n.node))
-}
-
-// Flex
-
-func (n *Node) SetFlex(flex float32) {
-	C.YGNodeStyleSetFlex(n.node, C.float(flex))
-}
-
-func (n *Node) GetFlex() float32 {
-	return float32(C.YGNodeStyleGetFlex(n.node))
-}
-
-// FlexGrow
-
-func (n *Node) SetFlexGrow(flexGrow float32) {
+func (n *Node) SetFlexGrow(flexGrow float32) *Node {
 	C.YGNodeStyleSetFlexGrow(n.node, C.float(flexGrow))
+	return n
+}
+
+func (n *Node) SetFlexShrink(flexShrink float32) *Node {
+	C.YGNodeStyleSetFlexShrink(n.node, C.float(flexShrink))
+	return n
+}
+
+func (n *Node) SetFlexBasis(flexBasis Value) *Node {
+	switch flexBasis.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetFlexBasis(n.node, C.float(flexBasis.value))
+	case UnitPercent:
+		C.YGNodeStyleSetFlexBasisPercent(n.node, C.float(flexBasis.value))
+	case UnitAuto:
+		C.YGNodeStyleSetFlexBasisAuto(n.node)
+	case UnitMaxContent:
+		C.YGNodeStyleSetFlexBasisMaxContent(n.node)
+	case UnitFitContent:
+		C.YGNodeStyleSetFlexBasisFitContent(n.node)
+	case UnitStretch:
+		C.YGNodeStyleSetFlexBasisStretch(n.node)
+	}
+	return n
+}
+
+func (n *Node) SetPosition(position PositionType) *Node {
+	ygPosition, _ := toYGPositionType(position)
+	C.YGNodeStyleSetPositionType(n.node, ygPosition)
+	return n
+}
+
+func (n *Node) SetTop(top Value) *Node {
+	switch top.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetPosition(n.node, C.YGEdgeTop, C.float(top.value))
+	case UnitPercent:
+		C.YGNodeStyleSetPositionPercent(n.node, C.YGEdgeTop, C.float(top.value))
+	case UnitAuto:
+		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeTop)
+	}
+	return n
+}
+
+func (n *Node) SetRight(right Value) *Node {
+	switch right.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetPosition(n.node, C.YGEdgeRight, C.float(right.value))
+	case UnitPercent:
+		C.YGNodeStyleSetPositionPercent(n.node, C.YGEdgeRight, C.float(right.value))
+	case UnitAuto:
+		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeRight)
+	}
+	return n
+}
+
+func (n *Node) SetBottom(bottom Value) *Node {
+	switch bottom.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetPosition(n.node, C.YGEdgeBottom, C.float(bottom.value))
+	case UnitPercent:
+		C.YGNodeStyleSetPositionPercent(n.node, C.YGEdgeBottom, C.float(bottom.value))
+	case UnitAuto:
+		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeBottom)
+	}
+	return n
+}
+
+func (n *Node) SetLeft(left Value) *Node {
+	switch left.unit {
+	case UnitPoint:
+		C.YGNodeStyleSetPosition(n.node, C.YGEdgeLeft, C.float(left.value))
+	case UnitPercent:
+		C.YGNodeStyleSetPositionPercent(n.node, C.YGEdgeLeft, C.float(left.value))
+	case UnitAuto:
+		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeLeft)
+	}
+	return n
+}
+
+func (n *Node) SetOverflow(overflow OverflowType) *Node {
+	ygOverflow, _ := toYGOverflow(overflow)
+	C.YGNodeStyleSetOverflow(n.node, ygOverflow)
+	return n
+}
+
+func (n *Node) SetBoxSizing(boxSizing BoxSizingType) *Node {
+	ygBoxSizing, _ := toYGBoxSizing(boxSizing)
+	C.YGNodeStyleSetBoxSizing(n.node, ygBoxSizing)
+	return n
+}
+
+// SetPadding sets the padding for the node.
+// Note: Padding can only be set in points or percent.
+func (n *Node) SetPadding(edges Edges) *Node {
+	setPaddingEdge := func(edge C.YGEdge, value Value) {
+		switch value.unit {
+		case UnitPoint:
+			C.YGNodeStyleSetPadding(n.node, edge, C.float(value.value))
+		case UnitPercent:
+			C.YGNodeStyleSetPaddingPercent(n.node, edge, C.float(value.value))
+		}
+	}
+
+	if edges.All.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeTop, edges.All)
+		setPaddingEdge(C.YGEdgeBottom, edges.All)
+		setPaddingEdge(C.YGEdgeLeft, edges.All)
+		setPaddingEdge(C.YGEdgeRight, edges.All)
+		setPaddingEdge(C.YGEdgeStart, edges.All)
+		setPaddingEdge(C.YGEdgeEnd, edges.All)
+	}
+	if edges.Horizontal.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeLeft, edges.Horizontal)
+		setPaddingEdge(C.YGEdgeRight, edges.Horizontal)
+		setPaddingEdge(C.YGEdgeStart, edges.Horizontal)
+		setPaddingEdge(C.YGEdgeEnd, edges.Horizontal)
+	}
+	if edges.Vertical.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeTop, edges.Vertical)
+		setPaddingEdge(C.YGEdgeBottom, edges.Vertical)
+	}
+	if edges.Start.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeStart, edges.Start)
+	}
+	if edges.End.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeEnd, edges.End)
+	}
+	if edges.Top.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeTop, edges.Top)
+	}
+	if edges.Bottom.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeBottom, edges.Bottom)
+	}
+	if edges.Left.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeLeft, edges.Left)
+	}
+	if edges.Right.unit != UnitUndefined {
+		setPaddingEdge(C.YGEdgeRight, edges.Right)
+	}
+
+	return n
+}
+
+// SetMargin sets the margin widths for the node.
+// Note: Margins can be set in points, percent, or auto.
+func (n *Node) SetMargin(edges Edges) *Node {
+	setMarginEdge := func(edge C.YGEdge, value Value) {
+		switch value.unit {
+		case UnitPoint:
+			C.YGNodeStyleSetMargin(n.node, edge, C.float(value.value))
+		case UnitPercent:
+			C.YGNodeStyleSetMarginPercent(n.node, edge, C.float(value.value))
+		case UnitAuto:
+			C.YGNodeStyleSetMarginAuto(n.node, edge)
+		}
+	}
+
+	if edges.All.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeTop, edges.All)
+		setMarginEdge(C.YGEdgeBottom, edges.All)
+		setMarginEdge(C.YGEdgeLeft, edges.All)
+		setMarginEdge(C.YGEdgeRight, edges.All)
+		setMarginEdge(C.YGEdgeStart, edges.All)
+		setMarginEdge(C.YGEdgeEnd, edges.All)
+	}
+	if edges.Horizontal.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeLeft, edges.Horizontal)
+		setMarginEdge(C.YGEdgeRight, edges.Horizontal)
+		setMarginEdge(C.YGEdgeStart, edges.Horizontal)
+		setMarginEdge(C.YGEdgeEnd, edges.Horizontal)
+	}
+	if edges.Vertical.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeTop, edges.Vertical)
+		setMarginEdge(C.YGEdgeBottom, edges.Vertical)
+	}
+	if edges.Start.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeStart, edges.Start)
+	}
+	if edges.End.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeEnd, edges.End)
+	}
+	if edges.Top.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeTop, edges.Top)
+	}
+	if edges.Bottom.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeBottom, edges.Bottom)
+	}
+	if edges.Left.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeLeft, edges.Left)
+	}
+	if edges.Right.unit != UnitUndefined {
+		setMarginEdge(C.YGEdgeRight, edges.Right)
+	}
+
+	return n
+}
+
+// SetBorder sets the border widths for the node.
+// Note: Borders can only be set in points.
+func (n *Node) SetBorder(edges Edges) *Node {
+	setBorderEdge := func(edge C.YGEdge, value Value) {
+		if value.unit == UnitPoint {
+			C.YGNodeStyleSetBorder(n.node, edge, C.float(value.value))
+		}
+	}
+
+	if edges.All.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeTop, edges.All)
+		setBorderEdge(C.YGEdgeBottom, edges.All)
+		setBorderEdge(C.YGEdgeLeft, edges.All)
+		setBorderEdge(C.YGEdgeRight, edges.All)
+		setBorderEdge(C.YGEdgeStart, edges.All)
+		setBorderEdge(C.YGEdgeEnd, edges.All)
+	}
+	if edges.Horizontal.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeLeft, edges.Horizontal)
+		setBorderEdge(C.YGEdgeRight, edges.Horizontal)
+		setBorderEdge(C.YGEdgeStart, edges.Horizontal)
+		setBorderEdge(C.YGEdgeEnd, edges.Horizontal)
+	}
+	if edges.Vertical.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeTop, edges.Vertical)
+		setBorderEdge(C.YGEdgeBottom, edges.Vertical)
+	}
+	if edges.Start.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeStart, edges.Start)
+	}
+	if edges.End.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeEnd, edges.End)
+	}
+	if edges.Top.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeTop, edges.Top)
+	}
+	if edges.Bottom.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeBottom, edges.Bottom)
+	}
+	if edges.Left.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeLeft, edges.Left)
+	}
+	if edges.Right.unit != UnitUndefined {
+		setBorderEdge(C.YGEdgeRight, edges.Right)
+	}
+
+	return n
+}
+
+// SetGap sets the gap sizes for the node.
+// Note: Gaps can be set in points or percent.
+func (n *Node) SetGap(gap Gap) *Node {
+	setGapGutter := func(gutter C.YGGutter, value Value) {
+		switch value.unit {
+		case UnitPoint:
+			C.YGNodeStyleSetGap(n.node, gutter, C.float(value.value))
+		case UnitPercent:
+			C.YGNodeStyleSetGapPercent(n.node, gutter, C.float(value.value))
+		}
+	}
+
+	if gap.All.unit != UnitUndefined {
+		setGapGutter(C.YGGutterAll, gap.All)
+	}
+	if gap.Row.unit != UnitUndefined {
+		setGapGutter(C.YGGutterRow, gap.Row)
+	}
+	if gap.Column.unit != UnitUndefined {
+		setGapGutter(C.YGGutterColumn, gap.Column)
+	}
+	return n
+}
+
+func (n *Node) GetDisplay() DisplayType {
+	return fromYGDisplay(C.YGNodeStyleGetDisplay(n.node))
+}
+
+func (n *Node) GetFlexDirection() FlexDirection {
+	return fromYGFlexDirection(C.YGNodeStyleGetFlexDirection(n.node))
+}
+
+func (n *Node) GetJustifyContent() FlexAlignment {
+	return fromYGJustify(C.YGNodeStyleGetJustifyContent(n.node))
+}
+
+func (n *Node) GetAlignItems() FlexAlignment {
+	return fromYGAlign(C.YGNodeStyleGetAlignItems(n.node))
+}
+
+func (n *Node) GetAlignSelf() FlexAlignment {
+	return fromYGAlign(C.YGNodeStyleGetAlignSelf(n.node))
+}
+
+func (n *Node) GetAlignContent() FlexAlignment {
+	return fromYGAlign(C.YGNodeStyleGetAlignContent(n.node))
+}
+
+func (n *Node) GetFlexWrap() FlexWrap {
+	return fromYGWrap(C.YGNodeStyleGetFlexWrap(n.node))
+}
+
+func (n *Node) GetDirection() DirectionType {
+	return fromYGDirection(C.YGNodeStyleGetDirection(n.node))
+}
+
+func (n *Node) GetWidth() Value {
+	return fromYGValue(C.YGNodeStyleGetWidth(n.node))
+}
+
+func (n *Node) GetHeight() Value {
+	return fromYGValue(C.YGNodeStyleGetHeight(n.node))
+}
+
+func (n *Node) GetMinWidth() Value {
+	return fromYGValue(C.YGNodeStyleGetMinWidth(n.node))
+}
+
+func (n *Node) GetMinHeight() Value {
+	return fromYGValue(C.YGNodeStyleGetMinHeight(n.node))
+}
+
+func (n *Node) GetMaxWidth() Value {
+	return fromYGValue(C.YGNodeStyleGetMaxWidth(n.node))
+}
+
+func (n *Node) GetMaxHeight() Value {
+	return fromYGValue(C.YGNodeStyleGetMaxHeight(n.node))
+}
+
+func (n *Node) GetAspectRatio() float32 {
+	return float32(C.YGNodeStyleGetAspectRatio(n.node))
 }
 
 func (n *Node) GetFlexGrow() float32 {
 	return float32(C.YGNodeStyleGetFlexGrow(n.node))
 }
 
-// FlexShrink
-
-func (n *Node) SetFlexShrink(flexShrink float32) {
-	C.YGNodeStyleSetFlexShrink(n.node, C.float(flexShrink))
-}
-
 func (n *Node) GetFlexShrink() float32 {
 	return float32(C.YGNodeStyleGetFlexShrink(n.node))
 }
 
-// FlexBasis
-
-func (n *Node) SetFlexBasis(flexBasis float32) {
-	C.YGNodeStyleSetFlexBasis(n.node, C.float(flexBasis))
-}
-
-func (n *Node) SetFlexBasisPercent(flexBasis float32) {
-	C.YGNodeStyleSetFlexBasisPercent(n.node, C.float(flexBasis))
-}
-
-func (n *Node) SetFlexBasisAuto() {
-	C.YGNodeStyleSetFlexBasisAuto(n.node)
-}
-
-func (n *Node) SetFlexBasisMaxContent() {
-	C.YGNodeStyleSetFlexBasisMaxContent(n.node)
-}
-
-func (n *Node) SetFlexBasisFitContent() {
-	C.YGNodeStyleSetFlexBasisFitContent(n.node)
-}
-
-func (n *Node) SetFlexBasisStretch() {
-	C.YGNodeStyleSetFlexBasisStretch(n.node)
-}
-
 func (n *Node) GetFlexBasis() Value {
-	v := C.YGNodeStyleGetFlexBasis(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	return fromYGValue(C.YGNodeStyleGetFlexBasis(n.node))
+}
+
+func (n *Node) GetPosition() PositionType {
+	return fromYGPositionType(C.YGNodeStyleGetPositionType(n.node))
+}
+
+func (n *Node) GetTop() Value {
+	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeTop))
+}
+
+func (n *Node) GetRight() Value {
+	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeRight))
+}
+
+func (n *Node) GetBottom() Value {
+	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeBottom))
+}
+
+func (n *Node) GetLeft() Value {
+	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeLeft))
+}
+
+func (n *Node) GetOverflow() OverflowType {
+	return fromYGOverflow(C.YGNodeStyleGetOverflow(n.node))
+}
+
+func (n *Node) GetBoxSizing() BoxSizingType {
+	return fromYGBoxSizing(C.YGNodeStyleGetBoxSizing(n.node))
+}
+
+func (n *Node) GetPadding() *StyleEdges {
+	return &StyleEdges{styleEdgePadding, n.node}
+}
+
+func (n *Node) GetMargin() *StyleEdges {
+	return &StyleEdges{styleEdgeMargin, n.node}
+}
+
+func (n *Node) GetBorder() *StyleEdges {
+	return &StyleEdges{styleEdgeBorder, n.node}
+}
+
+func (n *Node) GetGap() *StyleGap {
+	return &StyleGap{n.node}
+}
+
+// Apply applies a Style to the node
+func (n *Node) Apply(style *Style) *Node {
+	n.SetDisplay(style.Display)
+	n.SetFlexDirection(style.FlexDirection)
+	n.SetJustifyContent(style.JustifyContent)
+	n.SetAlignItems(style.AlignItems)
+	n.SetAlignSelf(style.AlignSelf)
+	n.SetAlignContent(style.AlignContent)
+	n.SetFlexWrap(style.FlexWrap)
+	n.SetDirection(style.Direction)
+
+	if style.Width.unit != UnitUndefined {
+		n.SetWidth(style.Width)
 	}
-}
-
-// Position
-
-func (n *Node) SetPosition(edge int, position float32) {
-	C.YGNodeStyleSetPosition(n.node, C.YGEdge(edge), C.float(position))
-}
-
-func (n *Node) SetPositionPercent(edge int, position float32) {
-	C.YGNodeStyleSetPositionPercent(n.node, C.YGEdge(edge), C.float(position))
-}
-
-func (n *Node) SetPositionAuto(edge int) {
-	C.YGNodeStyleSetPositionAuto(n.node, C.YGEdge(edge))
-}
-
-func (n *Node) GetPosition(edge int) Value {
-	v := C.YGNodeStyleGetPosition(n.node, C.YGEdge(edge))
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.Height.unit != UnitUndefined {
+		n.SetHeight(style.Height)
 	}
-}
-
-// Margin
-
-func (n *Node) SetMargin(edge int, margin float32) {
-	C.YGNodeStyleSetMargin(n.node, C.YGEdge(edge), C.float(margin))
-}
-
-func (n *Node) SetMarginPercent(edge int, margin float32) {
-	C.YGNodeStyleSetMarginPercent(n.node, C.YGEdge(edge), C.float(margin))
-}
-
-func (n *Node) SetMarginAuto(edge int) {
-	C.YGNodeStyleSetMarginAuto(n.node, C.YGEdge(edge))
-}
-
-func (n *Node) GetMargin(edge int) Value {
-	v := C.YGNodeStyleGetMargin(n.node, C.YGEdge(edge))
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.MinWidth.unit != UnitUndefined {
+		n.SetMinWidth(style.MinWidth)
 	}
-}
-
-// Padding
-
-func (n *Node) SetPadding(edge int, padding float32) {
-	C.YGNodeStyleSetPadding(n.node, C.YGEdge(edge), C.float(padding))
-}
-
-func (n *Node) SetPaddingPercent(edge int, padding float32) {
-	C.YGNodeStyleSetPaddingPercent(n.node, C.YGEdge(edge), C.float(padding))
-}
-
-func (n *Node) GetPadding(edge int) Value {
-	v := C.YGNodeStyleGetPadding(n.node, C.YGEdge(edge))
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.MinHeight.unit != UnitUndefined {
+		n.SetMinHeight(style.MinHeight)
 	}
-}
-
-// Border
-
-func (n *Node) SetBorder(edge int, border float32) {
-	C.YGNodeStyleSetBorder(n.node, C.YGEdge(edge), C.float(border))
-}
-
-func (n *Node) GetBorder(edge int) float32 {
-	return float32(C.YGNodeStyleGetBorder(n.node, C.YGEdge(edge)))
-}
-
-// Gap
-
-func (n *Node) SetGap(gutter int, gap float32) {
-	C.YGNodeStyleSetGap(n.node, C.YGGutter(gutter), C.float(gap))
-}
-
-func (n *Node) SetGapPercent(gutter int, gap float32) {
-	C.YGNodeStyleSetGapPercent(n.node, C.YGGutter(gutter), C.float(gap))
-}
-
-func (n *Node) GetGap(gutter int) Value {
-	v := C.YGNodeStyleGetGap(n.node, C.YGGutter(gutter))
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.MaxWidth.unit != UnitUndefined {
+		n.SetMaxWidth(style.MaxWidth)
 	}
-}
-
-// BoxSizing
-
-func (n *Node) SetBoxSizing(boxSizing int) {
-	C.YGNodeStyleSetBoxSizing(n.node, C.YGBoxSizing(boxSizing))
-}
-
-func (n *Node) GetBoxSizing() int {
-	return int(C.YGNodeStyleGetBoxSizing(n.node))
-}
-
-// Width
-
-func (n *Node) SetWidth(width float32) {
-	C.YGNodeStyleSetWidth(n.node, C.float(width))
-}
-
-func (n *Node) SetWidthPercent(width float32) {
-	C.YGNodeStyleSetWidthPercent(n.node, C.float(width))
-}
-
-func (n *Node) SetWidthAuto() {
-	C.YGNodeStyleSetWidthAuto(n.node)
-}
-
-func (n *Node) SetWidthMaxContent() {
-	C.YGNodeStyleSetWidthMaxContent(n.node)
-}
-
-func (n *Node) SetWidthFitContent() {
-	C.YGNodeStyleSetWidthFitContent(n.node)
-}
-
-func (n *Node) SetWidthStretch() {
-	C.YGNodeStyleSetWidthStretch(n.node)
-}
-
-func (n *Node) GetWidth() Value {
-	v := C.YGNodeStyleGetWidth(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.MaxHeight.unit != UnitUndefined {
+		n.SetMaxHeight(style.MaxHeight)
 	}
-}
-
-// Height
-
-func (n *Node) SetHeight(height float32) {
-	C.YGNodeStyleSetHeight(n.node, C.float(height))
-}
-
-func (n *Node) SetHeightPercent(height float32) {
-	C.YGNodeStyleSetHeightPercent(n.node, C.float(height))
-}
-
-func (n *Node) SetHeightAuto() {
-	C.YGNodeStyleSetHeightAuto(n.node)
-}
-
-func (n *Node) SetHeightMaxContent() {
-	C.YGNodeStyleSetHeightMaxContent(n.node)
-}
-
-func (n *Node) SetHeightFitContent() {
-	C.YGNodeStyleSetHeightFitContent(n.node)
-}
-
-func (n *Node) SetHeightStretch() {
-	C.YGNodeStyleSetHeightStretch(n.node)
-}
-
-func (n *Node) GetHeight() Value {
-	v := C.YGNodeStyleGetHeight(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.AspectRatio != 0 {
+		n.SetAspectRatio(style.AspectRatio)
 	}
-}
 
-// MinWidth
+	n.SetPadding(style.Padding)
+	n.SetMargin(style.Margin)
+	n.SetBorder(style.Border)
+	n.SetGap(style.Gap)
 
-func (n *Node) SetMinWidth(minWidth float32) {
-	C.YGNodeStyleSetMinWidth(n.node, C.float(minWidth))
-}
-
-func (n *Node) SetMinWidthPercent(minWidth float32) {
-	C.YGNodeStyleSetMinWidthPercent(n.node, C.float(minWidth))
-}
-
-func (n *Node) SetMinWidthMaxContent() {
-	C.YGNodeStyleSetMinWidthMaxContent(n.node)
-}
-
-func (n *Node) SetMinWidthFitContent() {
-	C.YGNodeStyleSetMinWidthFitContent(n.node)
-}
-
-func (n *Node) SetMinWidthStretch() {
-	C.YGNodeStyleSetMinWidthStretch(n.node)
-}
-
-func (n *Node) GetMinWidth() Value {
-	v := C.YGNodeStyleGetMinWidth(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	n.SetFlexGrow(style.FlexGrow)
+	n.SetFlexShrink(style.FlexShrink)
+	if style.FlexBasis.unit != UnitUndefined {
+		n.SetFlexBasis(style.FlexBasis)
 	}
-}
 
-// MinHeight
-
-func (n *Node) SetMinHeight(minHeight float32) {
-	C.YGNodeStyleSetMinHeight(n.node, C.float(minHeight))
-}
-
-func (n *Node) SetMinHeightPercent(minHeight float32) {
-	C.YGNodeStyleSetMinHeightPercent(n.node, C.float(minHeight))
-}
-
-func (n *Node) SetMinHeightMaxContent() {
-	C.YGNodeStyleSetMinHeightMaxContent(n.node)
-}
-
-func (n *Node) SetMinHeightFitContent() {
-	C.YGNodeStyleSetMinHeightFitContent(n.node)
-}
-
-func (n *Node) SetMinHeightStretch() {
-	C.YGNodeStyleSetMinHeightStretch(n.node)
-}
-
-func (n *Node) GetMinHeight() Value {
-	v := C.YGNodeStyleGetMinHeight(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	n.SetPosition(style.Position)
+	if style.Top.unit != UnitUndefined {
+		n.SetTop(style.Top)
 	}
-}
-
-// MaxWidth
-
-func (n *Node) SetMaxWidth(maxWidth float32) {
-	C.YGNodeStyleSetMaxWidth(n.node, C.float(maxWidth))
-}
-
-func (n *Node) SetMaxWidthPercent(maxWidth float32) {
-	C.YGNodeStyleSetMaxWidthPercent(n.node, C.float(maxWidth))
-}
-
-func (n *Node) SetMaxWidthMaxContent() {
-	C.YGNodeStyleSetMaxWidthMaxContent(n.node)
-}
-
-func (n *Node) SetMaxWidthFitContent() {
-	C.YGNodeStyleSetMaxWidthFitContent(n.node)
-}
-
-func (n *Node) SetMaxWidthStretch() {
-	C.YGNodeStyleSetMaxWidthStretch(n.node)
-}
-
-func (n *Node) GetMaxWidth() Value {
-	v := C.YGNodeStyleGetMaxWidth(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.Right.unit != UnitUndefined {
+		n.SetRight(style.Right)
 	}
-}
-
-// MaxHeight
-
-func (n *Node) SetMaxHeight(maxHeight float32) {
-	C.YGNodeStyleSetMaxHeight(n.node, C.float(maxHeight))
-}
-
-func (n *Node) SetMaxHeightPercent(maxHeight float32) {
-	C.YGNodeStyleSetMaxHeightPercent(n.node, C.float(maxHeight))
-}
-
-func (n *Node) SetMaxHeightMaxContent() {
-	C.YGNodeStyleSetMaxHeightMaxContent(n.node)
-}
-
-func (n *Node) SetMaxHeightFitContent() {
-	C.YGNodeStyleSetMaxHeightFitContent(n.node)
-}
-
-func (n *Node) SetMaxHeightStretch() {
-	C.YGNodeStyleSetMaxHeightStretch(n.node)
-}
-
-func (n *Node) GetMaxHeight() Value {
-	v := C.YGNodeStyleGetMaxHeight(n.node)
-	return Value{
-		Value: float32(v.value),
-		Unit:  Unit(v.unit),
+	if style.Bottom.unit != UnitUndefined {
+		n.SetBottom(style.Bottom)
 	}
+	if style.Left.unit != UnitUndefined {
+		n.SetLeft(style.Left)
+	}
+
+	n.SetOverflow(style.Overflow)
+	n.SetBoxSizing(style.BoxSizing)
+
+	return n
 }
 
-// AspectRatio
-
-func (n *Node) SetAspectRatio(aspectRatio float32) {
-	C.YGNodeStyleSetAspectRatio(n.node, C.float(aspectRatio))
+type StyleGap struct {
+	node C.YGNodeRef
 }
 
-func (n *Node) GetAspectRatio() float32 {
-	return float32(C.YGNodeStyleGetAspectRatio(n.node))
+func (g *StyleGap) GetRow() Value {
+	return fromYGValue(C.YGNodeStyleGetGap(g.node, C.YGGutterRow))
+}
+
+func (g *StyleGap) GetColumn() Value {
+	return fromYGValue(C.YGNodeStyleGetGap(g.node, C.YGGutterColumn))
+}
+
+func (g *StyleGap) GetAll() Value {
+	return fromYGValue(C.YGNodeStyleGetGap(g.node, C.YGGutterAll))
+}
+
+type styleEdgeType int
+
+const (
+	styleEdgePadding styleEdgeType = iota
+	styleEdgeMargin
+	styleEdgeBorder
+)
+
+type StyleEdges struct {
+	typ  styleEdgeType
+	node C.YGNodeRef
+}
+
+func (e *StyleEdges) GetTop() Value {
+	switch e.typ {
+	case styleEdgePadding:
+		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeTop))
+	case styleEdgeMargin:
+		return fromYGValue(C.YGNodeStyleGetMargin(e.node, C.YGEdgeTop))
+	case styleEdgeBorder:
+		return Value{unit: UnitPoint, value: float32(C.YGNodeStyleGetBorder(e.node, C.YGEdgeTop))}
+	}
+
+	return Undefined()
+}
+
+func (e *StyleEdges) GetRight() Value {
+	switch e.typ {
+	case styleEdgePadding:
+		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeRight))
+	case styleEdgeMargin:
+		return fromYGValue(C.YGNodeStyleGetMargin(e.node, C.YGEdgeRight))
+	case styleEdgeBorder:
+		return Value{unit: UnitPoint, value: float32(C.YGNodeStyleGetBorder(e.node, C.YGEdgeRight))}
+	}
+
+	return Undefined()
+}
+
+func (e *StyleEdges) GetBottom() Value {
+	switch e.typ {
+	case styleEdgePadding:
+		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeBottom))
+	case styleEdgeMargin:
+		return fromYGValue(C.YGNodeStyleGetMargin(e.node, C.YGEdgeBottom))
+	case styleEdgeBorder:
+		return Value{unit: UnitPoint, value: float32(C.YGNodeStyleGetBorder(e.node, C.YGEdgeBottom))}
+	}
+
+	return Undefined()
+}
+
+func (e *StyleEdges) GetLeft() Value {
+	switch e.typ {
+	case styleEdgePadding:
+		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeLeft))
+	case styleEdgeMargin:
+		return fromYGValue(C.YGNodeStyleGetMargin(e.node, C.YGEdgeLeft))
+	case styleEdgeBorder:
+		return Value{unit: UnitPoint, value: float32(C.YGNodeStyleGetBorder(e.node, C.YGEdgeLeft))}
+	}
+
+	return Undefined()
+}
+
+func (e *StyleEdges) GetStart() Value {
+	switch e.typ {
+	case styleEdgePadding:
+		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeStart))
+	case styleEdgeMargin:
+		return fromYGValue(C.YGNodeStyleGetMargin(e.node, C.YGEdgeStart))
+	case styleEdgeBorder:
+		return Value{unit: UnitPoint, value: float32(C.YGNodeStyleGetBorder(e.node, C.YGEdgeStart))}
+	}
+
+	return Undefined()
+}
+
+func (e *StyleEdges) GetEnd() Value {
+	switch e.typ {
+	case styleEdgePadding:
+		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeEnd))
+	case styleEdgeMargin:
+		return fromYGValue(C.YGNodeStyleGetMargin(e.node, C.YGEdgeEnd))
+	case styleEdgeBorder:
+		return Value{unit: UnitPoint, value: float32(C.YGNodeStyleGetBorder(e.node, C.YGEdgeEnd))}
+	}
+	return Undefined()
 }
