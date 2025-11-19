@@ -1,0 +1,147 @@
+name: Update Yoga
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Force specific version (optional, otherwise checks for latest)
+        required: false
+        type: string
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      should-update: ${{ steps.compare.outputs.should-update }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine version to build
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+            echo "Using manually specified version: $VERSION"
+          else
+            VERSION=$(curl -s https://api.github.com/repos/facebook/yoga/releases/latest | jq -r '.tag_name')
+            echo "Latest Yoga release: $VERSION"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get current version
+        id: current
+        run: |
+          CURRENT=$(cat etc/YOGA_VERSION)
+          echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT"
+
+      - name: Compare versions
+        id: compare
+        run: |
+          CURRENT="${{ steps.current.outputs.version }}"
+          NEW="${{ steps.version.outputs.version }}"
+
+          if [ "$CURRENT" != "$NEW" ]; then
+            echo "Update needed: $CURRENT → $NEW"
+            echo "should-update=true" >> $GITHUB_OUTPUT
+          else
+            echo "Already up to date: $CURRENT"
+            echo "should-update=false" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    needs: check-version
+    if: needs.check-version.outputs.should-update == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux_amd64
+          - os: macos-13
+            platform: darwin_amd64
+          - os: macos-14
+            platform: darwin_arm64
+          - os: windows-latest
+            platform: windows_amd64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Yoga
+        uses: ./.github/actions/build-yoga
+        with:
+          version: ${{ needs.check-version.outputs.version }}
+          platform: ${{ matrix.platform }}
+
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yoga-${{ matrix.platform }}
+          path: etc/lib/${{ matrix.platform }}/
+
+      - name: Upload headers artifact (once)
+        if: matrix.platform == 'linux_amd64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: yoga-headers
+          path: etc/include/
+
+  create-pr:
+    needs: [check-version, build]
+    if: needs.check-version.outputs.should-update == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Organize artifacts
+        run: |
+          for platform in linux_amd64 darwin_amd64 darwin_arm64 windows_amd64; do
+            if [ -d "artifacts/yoga-$platform" ]; then
+              mkdir -p "etc/lib/$platform"
+              cp -r "artifacts/yoga-$platform/"* "etc/lib/$platform/" || true
+            fi
+          done
+
+          rm -rf etc/include/yoga
+          mkdir -p etc/include
+          cp -r artifacts/yoga-headers/* etc/include/
+
+          echo "${{ needs.check-version.outputs.version }}" > etc/YOGA_VERSION
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: update Yoga to ${{ needs.check-version.outputs.version }}"
+          branch: automated/yoga-update-${{ needs.check-version.outputs.version }}
+          delete-branch: true
+          title: "chore: update Yoga to ${{ needs.check-version.outputs.version }}"
+          body: |
+            ## Yoga Update
+
+            This PR updates Yoga from the previous version to **${{ needs.check-version.outputs.version }}**.
+
+            ### Changes
+            - Updated Yoga libraries for all platforms
+            - Updated headers in `etc/include/yoga/`
+            - Updated version in `etc/YOGA_VERSION`
+
+            ### Release Notes
+            See [Yoga ${{ needs.check-version.outputs.version }} Release](https://github.com/facebook/yoga/releases/tag/${{ needs.check-version.outputs.version }})

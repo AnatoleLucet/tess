@@ -1,0 +1,47 @@
+name: Build Yoga
+description: Build Yoga for a specific platform
+
+inputs:
+  version:
+    description: Yoga version to build (e.g., v3.0.2)
+    required: true
+  platform:
+    description: Target platform (e.g., linux_amd64, darwin_arm64)
+    required: true
+
+outputs:
+  lib-path:
+    description: Path to the built library
+    value: ${{ steps.build.outputs.lib-path }}
+  headers-path:
+    description: Path to the headers
+    value: ${{ steps.build.outputs.headers-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew install cmake
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+
+    - name: Build Yoga
+      id: build
+      shell: bash
+      run: |
+        chmod +x "${{ github.action_path }}/build.sh"
+        "${{ github.action_path }}/build.sh" "${{ inputs.version }}" "${{ inputs.platform }}"
