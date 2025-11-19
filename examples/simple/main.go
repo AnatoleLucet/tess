@@ -8,28 +8,60 @@ import (
 )
 
 func main() {
+	// Create root container
 	root := tess.NewNode()
 	defer root.Free()
 
-	root.SetWidth(100)
-	root.SetHeight(100)
+	root.SetWidth(400)
+	root.SetHeight(300)
 	root.SetFlexDirection(tess.FlexDirectionRow)
-	root.SetJustifyContent(tess.JustifyCenter)
+	root.SetJustifyContent(tess.JustifySpaceBetween)
+	root.SetAlignItems(tess.AlignCenter)
+	root.SetPadding(tess.EdgeAll, 20)
+	root.SetGap(tess.GutterColumn, 10)
 
-	child := tess.NewNode()
-	defer child.Free()
+	// Create first child with fixed dimensions
+	child1 := tess.NewNode()
+	defer child1.Free()
+	child1.SetWidth(100)
+	child1.SetHeight(100)
+	child1.SetMargin(tess.EdgeAll, 5)
 
-	child.SetWidth(50)
-	child.SetHeight(50)
+	// Create second child with percentage-based width
+	child2 := tess.NewNode()
+	defer child2.Free()
+	child2.SetWidthPercent(30)
+	child2.SetHeight(120)
+	child2.SetAlignSelf(tess.AlignFlexStart)
 
-	root.InsertChild(child, 0)
-	root.CalculateLayout(float32(math.NaN()), float32(math.NaN()))
+	// Create third child with flex grow
+	child3 := tess.NewNode()
+	defer child3.Free()
+	child3.SetFlexGrow(1)
+	child3.SetHeight(80)
+	child3.SetMargin(tess.EdgeLeft, 10)
 
-	rootLayout := root.GetLayout()
-	childLayout := child.GetLayout()
+	// Add children to root
+	root.InsertChild(child1, 0)
+	root.InsertChild(child2, 1)
+	root.InsertChild(child3, 2)
 
-	fmt.Printf("Root layout: left=%.2f, top=%.2f, width=%.2f, height=%.2f\n",
-		rootLayout.Left, rootLayout.Top, rootLayout.Width, rootLayout.Height)
-	fmt.Printf("Child layout: left=%.2f, top=%.2f, width=%.2f, height=%.2f\n",
-		childLayout.Left, childLayout.Top, childLayout.Width, childLayout.Height)
+	// Calculate layout
+	root.CalculateLayout(float32(math.NaN()), float32(math.NaN()), tess.DirectionLTR)
+
+	// Print results
+	fmt.Println("=== Tess Layout Example ===")
+	fmt.Printf("\nRoot: %.2f x %.2f\n", root.GetLayoutWidth(), root.GetLayoutHeight())
+	fmt.Printf("  Padding: left=%.2f, top=%.2f, right=%.2f, bottom=%.2f\n",
+		root.GetLayoutPadding(tess.EdgeLeft),
+		root.GetLayoutPadding(tess.EdgeTop),
+		root.GetLayoutPadding(tess.EdgeRight),
+		root.GetLayoutPadding(tess.EdgeBottom))
+
+	for i := 0; i < root.GetChildCount(); i++ {
+		child := root.GetChild(i)
+		layout := child.GetLayout()
+		fmt.Printf("\nChild %d: left=%.2f, top=%.2f, width=%.2f, height=%.2f\n",
+			i+1, layout.Left, layout.Top, layout.Width, layout.Height)
+	}
 }
