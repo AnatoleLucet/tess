@@ -37,7 +37,7 @@ runs:
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        choco install cmake mingw --installargs 'ADD_CMAKE_TO_PATH=System'
 
     - name: Build Yoga
       id: build

@@ -32,7 +32,20 @@ clone_yoga() {
 
 build_yoga() {
   cd "$YOGA_DIR"
-  cmake -S "$YOGA_DIR" -B "$BUILD_DIR"  -DCMAKE_BUILD_TYPE=Release  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+  if [[ "$PLATFORM" == windows_* ]]; then
+    cmake -S "$YOGA_DIR" -B "$BUILD_DIR" \
+      -G "MinGW Makefiles" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+      -DCMAKE_C_COMPILER=gcc \
+      -DCMAKE_CXX_COMPILER=g++
+  else
+    cmake -S "$YOGA_DIR" -B "$BUILD_DIR" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  fi
+
   cmake --build "$BUILD_DIR" --target yogacore --config Release -j "$(nproc 2>/dev/null || echo 2)"
 }
 
@@ -41,11 +54,7 @@ install_artifacts() {
   local include_dir="$ROOT_DIR/etc/include"
 
   mkdir -p "$lib_dir"
-  if [[ "$PLATFORM" == windows_* ]]; then
-    cp "$BUILD_DIR/yoga/Release/yogacore.lib" "$lib_dir/"
-  else
-    cp "$BUILD_DIR/yoga/libyogacore.a" "$lib_dir/"
-  fi
+  cp "$BUILD_DIR/yoga/libyogacore.a" "$lib_dir/"
 
   rm -rf "$include_dir/yoga"
   mkdir -p "$include_dir"

@@ -45,7 +45,10 @@ jobs:
           CURRENT="${{ steps.current.outputs.version }}"
           NEW="${{ steps.version.outputs.version }}"
 
-          if [ "$CURRENT" != "$NEW" ]; then
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Manual trigger, forcing update: $NEW"
+            echo "should-update=true" >> $GITHUB_OUTPUT
+          elif [ "$CURRENT" != "$NEW" ]; then
             echo "Update needed: $CURRENT → $NEW"
             echo "should-update=true" >> $GITHUB_OUTPUT
           else
