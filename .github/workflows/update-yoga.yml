@@ -127,6 +127,7 @@ jobs:
           rm -rf etc/include/yoga
           mkdir -p etc/include
           cp -r artifacts/yoga-headers/* etc/include/
+          rm -rf artifacts
 
           echo "${{ needs.check-version.outputs.version }}" > etc/YOGA_VERSION
 
