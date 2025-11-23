@@ -110,19 +110,21 @@ static void computeFlexBasisForChild(
         FloatOptional(paddingAndBorderForAxis(
             child, FlexDirection::Row, direction, ownerWidth));
 
-    child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        child->getResolvedDimension(
-            direction, Dimension::Width, ownerWidth, ownerWidth),
-        paddingAndBorder));
+    child->setLayoutComputedFlexBasis(
+        yoga::maxOrDefined(
+            child->getResolvedDimension(
+                direction, Dimension::Width, ownerWidth, ownerWidth),
+            paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
     // The height is definite, so use that as the flex basis.
     const FloatOptional paddingAndBorder =
         FloatOptional(paddingAndBorderForAxis(
             child, FlexDirection::Column, direction, ownerWidth));
-    child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        child->getResolvedDimension(
-            direction, Dimension::Height, ownerHeight, ownerWidth),
-        paddingAndBorder));
+    child->setLayoutComputedFlexBasis(
+        yoga::maxOrDefined(
+            child->getResolvedDimension(
+                direction, Dimension::Height, ownerHeight, ownerWidth),
+            paddingAndBorder));
   } else {
     // Compute the flex basis and hypothetical main size (i.e. the clamped flex
     // basis).
@@ -253,9 +255,10 @@ static void computeFlexBasisForChild(
         depth,
         generationCount);
 
-    child->setLayoutComputedFlexBasis(FloatOptional(yoga::maxOrDefined(
-        child->getLayout().measuredDimension(dimension(mainAxis)),
-        paddingAndBorderForAxis(child, mainAxis, direction, ownerWidth))));
+    child->setLayoutComputedFlexBasis(FloatOptional(
+        yoga::maxOrDefined(
+            child->getLayout().measuredDimension(dimension(mainAxis)),
+            paddingAndBorderForAxis(child, mainAxis, direction, ownerWidth))));
   }
   child->setLayoutComputedFlexBasisGeneration(generationCount);
 }
@@ -415,6 +418,12 @@ static void measureNodeWithoutChildren(
       Dimension::Height);
 }
 
+inline bool isFixedSize(float dim, SizingMode sizingMode) {
+  return sizingMode == SizingMode::StretchFit ||
+      (yoga::isDefined(dim) && sizingMode == SizingMode::FitContent &&
+       dim <= 0.0);
+}
+
 static bool measureNodeWithFixedSize(
     yoga::Node* const node,
     const Direction direction,
@@ -424,12 +433,8 @@ static bool measureNodeWithFixedSize(
     const SizingMode heightSizingMode,
     const float ownerWidth,
     const float ownerHeight) {
-  if ((yoga::isDefined(availableWidth) &&
-       widthSizingMode == SizingMode::FitContent && availableWidth <= 0.0f) ||
-      (yoga::isDefined(availableHeight) &&
-       heightSizingMode == SizingMode::FitContent && availableHeight <= 0.0f) ||
-      (widthSizingMode == SizingMode::StretchFit &&
-       heightSizingMode == SizingMode::StretchFit)) {
+  if (isFixedSize(availableWidth, widthSizingMode) &&
+      isFixedSize(availableHeight, heightSizingMode)) {
     node->setLayoutMeasuredDimension(
         boundAxis(
             node,
@@ -476,16 +481,19 @@ static void zeroOutLayoutRecursively(yoga::Node* const node) {
 }
 
 static void cleanupContentsNodesRecursively(yoga::Node* const node) {
-  for (auto child : node->getChildren()) {
-    if (child->style().display() == Display::Contents) {
-      child->getLayout() = {};
-      child->setLayoutDimension(0, Dimension::Width);
-      child->setLayoutDimension(0, Dimension::Height);
-      child->setHasNewLayout(true);
-      child->setDirty(false);
-      child->cloneChildrenIfNeeded();
+  if (node->hasContentsChildren()) [[unlikely]] {
+    node->cloneContentsChildrenIfNeeded();
+    for (auto child : node->getChildren()) {
+      if (child->style().display() == Display::Contents) {
+        child->getLayout() = {};
+        child->setLayoutDimension(0, Dimension::Width);
+        child->setLayoutDimension(0, Dimension::Height);
+        child->setHasNewLayout(true);
+        child->setDirty(false);
+        child->cloneChildrenIfNeeded();
 
-      cleanupContentsNodesRecursively(child);
+        cleanupContentsNodesRecursively(child);
+      }
     }
   }
 }
@@ -741,7 +749,7 @@ static float distributeFreeSpaceSecondPass(
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
-                  .unit() == Unit::Percent &&
+              .isPercent() &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
@@ -1213,10 +1221,10 @@ static void calculateLayoutImpl(
     const float ownerWidth,
     const float ownerHeight,
     const bool performLayout,
+    const LayoutPassReason reason,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
-    const uint32_t generationCount,
-    const LayoutPassReason reason) {
+    const uint32_t generationCount) {
   yoga::assertFatalWithNode(
       node,
       yoga::isUndefined(availableWidth)
@@ -1780,7 +1788,7 @@ static void calculateLayoutImpl(
                                     crossAxis,
                                     direction,
                                     unclampedCrossDim,
-                                    ownerHeight,
+                                    crossAxisOwnerSize,
                                     ownerWidth) -
         paddingAndBorderAxisCross;
 
@@ -2268,10 +2276,10 @@ bool calculateLayoutInternal(
         ownerWidth,
         ownerHeight,
         performLayout,
+        reason,
         layoutMarkerData,
         depth,
-        generationCount,
-        reason);
+        generationCount);
 
     layout->lastOwnerDirection = ownerDirection;
     layout->configVersion = node->getConfig()->getVersion();
