@@ -18,7 +18,16 @@ BUILD_DIR="$YOGA_DIR/build"
 clone_yoga() {
   mkdir -p "$TMP_DIR"
   rm -rf "$YOGA_DIR"
-  git clone --depth 1 --branch "$VERSION"  https://github.com/facebook/yoga.git "$YOGA_DIR"
+
+  git clone https://github.com/facebook/yoga.git "$YOGA_DIR"
+  cd "$YOGA_DIR"
+
+  if git rev-parse --verify "$VERSION" >/dev/null 2>&1; then
+    git checkout "$VERSION"
+  else
+    echo "Error: version '$VERSION' not found."
+    return 1
+  fi
 }
 
 build_yoga() {
