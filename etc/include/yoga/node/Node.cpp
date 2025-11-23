@@ -181,17 +181,6 @@ void Node::setDirty(bool isDirty) {
   }
 }
 
-void Node::setChildren(const std::vector<Node*>& children) {
-  children_ = children;
-
-  contentsChildrenCount_ = 0;
-  for (const auto& child : children) {
-    if (child->style().display() == Display::Contents) {
-      contentsChildrenCount_++;
-    }
-  }
-}
-
 bool Node::removeChild(Node* child) {
   auto p = std::find(children_.begin(), children_.end(), child);
   if (p != children_.end()) {
@@ -256,9 +245,8 @@ void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float lengthValue, Dimension dimension) {
-  layout_.setDimension(dimension, lengthValue);
-  layout_.setRawDimension(dimension, lengthValue);
+void Node::setLayoutDimension(float LengthValue, Dimension dimension) {
+  layout_.setDimension(dimension, LengthValue);
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or
@@ -326,16 +314,16 @@ void Node::setPosition(
       crossAxisTrailingEdge);
 }
 
-Style::SizeLength Node::processFlexBasis() const {
-  Style::SizeLength flexBasis = style_.flexBasis();
-  if (!flexBasis.isAuto() && !flexBasis.isUndefined()) {
+Style::Length Node::processFlexBasis() const {
+  Style::Length flexBasis = style_.flexBasis();
+  if (flexBasis.unit() != Unit::Auto && flexBasis.unit() != Unit::Undefined) {
     return flexBasis;
   }
   if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults() ? StyleSizeLength::ofAuto()
-                                     : StyleSizeLength::points(0);
+    return config_->useWebDefaults() ? StyleLength::ofAuto()
+                                     : StyleLength::points(0);
   }
-  return StyleSizeLength::ofAuto();
+  return StyleLength::ofAuto();
 }
 
 FloatOptional Node::resolveFlexBasis(
@@ -391,23 +379,6 @@ void Node::cloneChildrenIfNeeded() {
     if (child->getOwner() != this) {
       child = resolveRef(config_->cloneNode(child, this, i));
       child->setOwner(this);
-
-      if (child->hasContentsChildren()) [[unlikely]] {
-        child->cloneContentsChildrenIfNeeded();
-      }
-    }
-    i += 1;
-  }
-}
-
-void Node::cloneContentsChildrenIfNeeded() {
-  size_t i = 0;
-  for (Node*& child : children_) {
-    if (child->style().display() == Display::Contents &&
-        child->getOwner() != this) {
-      child = resolveRef(config_->cloneNode(child, this, i));
-      child->setOwner(this);
-      child->cloneChildrenIfNeeded();
     }
     i += 1;
   }
