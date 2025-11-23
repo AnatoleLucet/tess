@@ -96,6 +96,10 @@ class YG_EXPORT Node : public ::YGNode {
     return config_->hasErrata(errata);
   }
 
+  bool hasContentsChildren() const {
+    return contentsChildrenCount_ != 0;
+  }
+
   YGDirtiedFunc getDirtiedFunc() const {
     return dirtiedFunc_;
   }
@@ -172,7 +176,7 @@ class YG_EXPORT Node : public ::YGNode {
     return isDirty_;
   }
 
-  Style::Length getProcessedDimension(Dimension dimension) const {
+  Style::SizeLength getProcessedDimension(Dimension dimension) const {
     return processedDimensions_[static_cast<size_t>(dimension)];
   }
 
@@ -244,22 +248,19 @@ class YG_EXPORT Node : public ::YGNode {
     owner_ = owner;
   }
 
-  void setChildren(const std::vector<Node*>& children) {
-    children_ = children;
-  }
-
   // TODO: rvalue override for setChildren
 
   void setConfig(Config* config);
 
   void setDirty(bool isDirty);
+  void setChildren(const std::vector<Node*>& children);
   void setLayoutLastOwnerDirection(Direction direction);
   void setLayoutComputedFlexBasis(FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, Dimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
-  void setLayoutDimension(float LengthValue, Dimension dimension);
+  void setLayoutDimension(float lengthValue, Dimension dimension);
   void setLayoutDirection(Direction direction);
   void setLayoutMargin(float margin, PhysicalEdge edge);
   void setLayoutBorder(float border, PhysicalEdge edge);
@@ -268,7 +269,7 @@ class YG_EXPORT Node : public ::YGNode {
   void setPosition(Direction direction, float ownerWidth, float ownerHeight);
 
   // Other methods
-  Style::Length processFlexBasis() const;
+  Style::SizeLength processFlexBasis() const;
   FloatOptional resolveFlexBasis(
       Direction direction,
       FlexDirection flexDirection,
@@ -286,6 +287,7 @@ class YG_EXPORT Node : public ::YGNode {
   void removeChild(size_t index);
 
   void cloneChildrenIfNeeded();
+  void cloneContentsChildrenIfNeeded();
   void markDirtyAndPropagate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
@@ -322,8 +324,8 @@ class YG_EXPORT Node : public ::YGNode {
   Node* owner_ = nullptr;
   std::vector<Node*> children_;
   const Config* config_;
-  std::array<Style::Length, 2> processedDimensions_{
-      {StyleLength::undefined(), StyleLength::undefined()}};
+  std::array<Style::SizeLength, 2> processedDimensions_{
+      {StyleSizeLength::undefined(), StyleSizeLength::undefined()}};
 };
 
 inline Node* resolveRef(const YGNodeRef ref) {
