@@ -13,7 +13,7 @@ func main() {
 		Height: tess.Point(300),
 
 		FlexDirection:  tess.Row,
-		JustifyContent: tess.AlignSpaceBetween,
+		JustifyContent: tess.JustifySpaceBetween,
 		AlignItems:     tess.AlignCenter,
 
 		Padding: tess.Edges{All: tess.Point(20)},
@@ -59,10 +59,10 @@ func main() {
 	fmt.Println("=== Tess Layout Example ===")
 	fmt.Printf("\nRoot: %.2f x %.2f\n", root.GetLayout().Width(), root.GetLayout().Height())
 	fmt.Printf("  Padding: left=%.2f, top=%.2f, right=%.2f, bottom=%.2f\n",
-		root.GetLayout().Padding.Left(),
-		root.GetLayout().Padding.Top(),
-		root.GetLayout().Padding.Right(),
-		root.GetLayout().Padding.Bottom())
+		root.GetLayout().Padding().Left(),
+		root.GetLayout().Padding().Top(),
+		root.GetLayout().Padding().Right(),
+		root.GetLayout().Padding().Bottom())
 
 	for i := 0; i < root.GetChildCount(); i++ {
 		child := root.GetChild(i)

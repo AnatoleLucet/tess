@@ -25,8 +25,8 @@ func TestFlexDirection(t *testing.T) {
 	})
 }
 
-func TestFlexAlignment(t *testing.T) {
-	t.Run("FlexAlignment String method", func(t *testing.T) {
+func TestFlexAlign(t *testing.T) {
+	t.Run("FlexAlign String method", func(t *testing.T) {
 		assert.Equal(t, "auto", AlignAuto.String())
 		assert.Equal(t, "stretch", AlignStretch.String())
 		assert.Equal(t, "baseline", AlignBaseline.String())
@@ -36,7 +36,19 @@ func TestFlexAlignment(t *testing.T) {
 		assert.Equal(t, "space-between", AlignSpaceBetween.String())
 		assert.Equal(t, "space-around", AlignSpaceAround.String())
 		assert.Equal(t, "space-evenly", AlignSpaceEvenly.String())
-		assert.Equal(t, "unknown", FlexAlignment(999).String())
+		assert.Equal(t, "unknown", FlexAlign(999).String())
+	})
+}
+
+func TestFlexJustify(t *testing.T) {
+	t.Run("FlexJustify String method", func(t *testing.T) {
+		assert.Equal(t, "flex-start", JustifyStart.String())
+		assert.Equal(t, "flex-end", JustifyEnd.String())
+		assert.Equal(t, "center", JustifyCenter.String())
+		assert.Equal(t, "space-between", JustifySpaceBetween.String())
+		assert.Equal(t, "space-around", JustifySpaceAround.String())
+		assert.Equal(t, "space-evenly", JustifySpaceEvenly.String())
+		assert.Equal(t, "unknown", FlexJustify(999).String())
 	})
 }
 

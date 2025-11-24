@@ -21,7 +21,7 @@ func toYGDisplay(display DisplayType) (C.YGDisplay, error) {
 	return 0, fmt.Errorf("Unsupported display type '%s'", display.String())
 }
 
-func toYGAlign(align FlexAlignment) (C.YGAlign, error) {
+func toYGAlign(align FlexAlign) (C.YGAlign, error) {
 	switch align {
 	case AlignAuto:
 		return C.YGAlign(C.YGAlignAuto), nil
@@ -46,19 +46,19 @@ func toYGAlign(align FlexAlignment) (C.YGAlign, error) {
 	return 0, fmt.Errorf("Unsupported alignment for align-items/self '%s'", align.String())
 }
 
-func toYGJustify(align FlexAlignment) (C.YGJustify, error) {
+func toYGJustify(align FlexJustify) (C.YGJustify, error) {
 	switch align {
-	case AlignStart:
+	case JustifyStart:
 		return C.YGJustify(C.YGJustifyFlexStart), nil
-	case AlignEnd:
+	case JustifyEnd:
 		return C.YGJustify(C.YGJustifyFlexEnd), nil
-	case AlignCenter:
+	case JustifyCenter:
 		return C.YGJustify(C.YGJustifyCenter), nil
-	case AlignSpaceBetween:
+	case JustifySpaceBetween:
 		return C.YGJustify(C.YGJustifySpaceBetween), nil
-	case AlignSpaceAround:
+	case JustifySpaceAround:
 		return C.YGJustify(C.YGJustifySpaceAround), nil
-	case AlignSpaceEvenly:
+	case JustifySpaceEvenly:
 		return C.YGJustify(C.YGJustifySpaceEvenly), nil
 	}
 
@@ -197,7 +197,7 @@ func fromYGDisplay(ygDisplay C.YGDisplay) DisplayType {
 	return Flex
 }
 
-func fromYGAlign(ygAlign C.YGAlign) FlexAlignment {
+func fromYGAlign(ygAlign C.YGAlign) FlexAlign {
 	switch ygAlign {
 	case C.YGAlignAuto:
 		return AlignAuto
@@ -221,22 +221,22 @@ func fromYGAlign(ygAlign C.YGAlign) FlexAlignment {
 	return AlignAuto
 }
 
-func fromYGJustify(ygJustify C.YGJustify) FlexAlignment {
+func fromYGJustify(ygJustify C.YGJustify) FlexJustify {
 	switch ygJustify {
 	case C.YGJustifyFlexStart:
-		return AlignStart
+		return JustifyStart
 	case C.YGJustifyFlexEnd:
-		return AlignEnd
+		return JustifyEnd
 	case C.YGJustifyCenter:
-		return AlignCenter
+		return JustifyCenter
 	case C.YGJustifySpaceBetween:
-		return AlignSpaceBetween
+		return JustifySpaceBetween
 	case C.YGJustifySpaceAround:
-		return AlignSpaceAround
+		return JustifySpaceAround
 	case C.YGJustifySpaceEvenly:
-		return AlignSpaceEvenly
+		return JustifySpaceEvenly
 	}
-	return AlignStart
+	return JustifyStart
 }
 
 func fromYGFlexDirection(ygDirection C.YGFlexDirection) FlexDirection {

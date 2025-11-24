@@ -41,11 +41,11 @@ func TestStyleAlignment(t *testing.T) {
 	t.Run("sets and gets justify content", func(t *testing.T) {
 		node := NewNode()
 
-		node.SetJustifyContent(AlignCenter)
-		assert.Equal(t, AlignCenter, node.GetJustifyContent())
+		node.SetJustifyContent(JustifyCenter)
+		assert.Equal(t, JustifyCenter, node.GetJustifyContent())
 
-		node.SetJustifyContent(AlignSpaceBetween)
-		assert.Equal(t, AlignSpaceBetween, node.GetJustifyContent())
+		node.SetJustifyContent(JustifySpaceBetween)
+		assert.Equal(t, JustifySpaceBetween, node.GetJustifyContent())
 
 		node.Free()
 	})
@@ -421,7 +421,7 @@ func TestStyleApply(t *testing.T) {
 		style := &Style{
 			Display:        Flex,
 			FlexDirection:  Row,
-			JustifyContent: AlignCenter,
+			JustifyContent: JustifyCenter,
 			AlignItems:     AlignStretch,
 			Width:          Point(300),
 			Height:         Point(200),
@@ -434,7 +434,7 @@ func TestStyleApply(t *testing.T) {
 
 		assert.Equal(t, Flex, node.GetDisplay())
 		assert.Equal(t, Row, node.GetFlexDirection())
-		assert.Equal(t, AlignCenter, node.GetJustifyContent())
+		assert.Equal(t, JustifyCenter, node.GetJustifyContent())
 		assert.Equal(t, AlignStretch, node.GetAlignItems())
 		assert.Equal(t, Point(300), node.GetWidth())
 		assert.Equal(t, Point(200), node.GetHeight())
@@ -486,13 +486,13 @@ func TestStyleChaining(t *testing.T) {
 			SetWidth(Point(100)).
 			SetHeight(Point(200)).
 			SetFlexDirection(Row).
-			SetJustifyContent(AlignCenter).
+			SetJustifyContent(JustifyCenter).
 			SetPadding(Edges{All: Point(10)})
 
 		assert.Equal(t, Point(100), node.GetWidth())
 		assert.Equal(t, Point(200), node.GetHeight())
 		assert.Equal(t, Row, node.GetFlexDirection())
-		assert.Equal(t, AlignCenter, node.GetJustifyContent())
+		assert.Equal(t, JustifyCenter, node.GetJustifyContent())
 		assert.Equal(t, Point(10), node.GetPadding().GetTop())
 
 		node.Free()

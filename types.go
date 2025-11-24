@@ -50,12 +50,12 @@ func (a FlexDirection) String() string {
 	return "unknown"
 }
 
-type FlexAlignment int
+type FlexAlign int
 
 const (
-	AlignAuto     FlexAlignment = iota // for AlignItems only
-	AlignStretch                       // for AlignItems only
-	AlignBaseline                      // for AlignItems only
+	AlignAuto FlexAlign = iota
+	AlignStretch
+	AlignBaseline
 	AlignStart
 	AlignEnd
 	AlignCenter
@@ -64,7 +64,7 @@ const (
 	AlignSpaceEvenly
 )
 
-func (a FlexAlignment) String() string {
+func (a FlexAlign) String() string {
 	switch a {
 	case AlignAuto:
 		return "auto"
@@ -83,6 +83,36 @@ func (a FlexAlignment) String() string {
 	case AlignSpaceAround:
 		return "space-around"
 	case AlignSpaceEvenly:
+		return "space-evenly"
+	}
+
+	return "unknown"
+}
+
+type FlexJustify int
+
+const (
+	JustifyStart FlexJustify = iota
+	JustifyEnd
+	JustifyCenter
+	JustifySpaceBetween
+	JustifySpaceAround
+	JustifySpaceEvenly
+)
+
+func (a FlexJustify) String() string {
+	switch a {
+	case JustifyStart:
+		return "flex-start"
+	case JustifyCenter:
+		return "center"
+	case JustifyEnd:
+		return "flex-end"
+	case JustifySpaceBetween:
+		return "space-between"
+	case JustifySpaceAround:
+		return "space-around"
+	case JustifySpaceEvenly:
 		return "space-evenly"
 	}
 

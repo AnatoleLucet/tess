@@ -9,10 +9,10 @@ type Style struct {
 	// Display & Layout
 	Display        DisplayType
 	FlexDirection  FlexDirection
-	JustifyContent FlexAlignment
-	AlignItems     FlexAlignment
-	AlignSelf      FlexAlignment
-	AlignContent   FlexAlignment
+	JustifyContent FlexJustify
+	AlignItems     FlexAlign
+	AlignSelf      FlexAlign
+	AlignContent   FlexAlign
 	FlexWrap       FlexWrap
 	Direction      DirectionType
 
@@ -56,25 +56,25 @@ func (n *Node) SetFlexDirection(direction FlexDirection) *Node {
 	return n
 }
 
-func (n *Node) SetJustifyContent(justify FlexAlignment) *Node {
+func (n *Node) SetJustifyContent(justify FlexJustify) *Node {
 	ygJustify, _ := toYGJustify(justify)
 	C.YGNodeStyleSetJustifyContent(n.node, ygJustify)
 	return n
 }
 
-func (n *Node) SetAlignItems(align FlexAlignment) *Node {
+func (n *Node) SetAlignItems(align FlexAlign) *Node {
 	ygAlign, _ := toYGAlign(align)
 	C.YGNodeStyleSetAlignItems(n.node, ygAlign)
 	return n
 }
 
-func (n *Node) SetAlignSelf(align FlexAlignment) *Node {
+func (n *Node) SetAlignSelf(align FlexAlign) *Node {
 	ygAlign, _ := toYGAlign(align)
 	C.YGNodeStyleSetAlignSelf(n.node, ygAlign)
 	return n
 }
 
-func (n *Node) SetAlignContent(align FlexAlignment) *Node {
+func (n *Node) SetAlignContent(align FlexAlign) *Node {
 	ygAlign, _ := toYGAlign(align)
 	C.YGNodeStyleSetAlignContent(n.node, ygAlign)
 	return n
@@ -478,19 +478,19 @@ func (n *Node) GetFlexDirection() FlexDirection {
 	return fromYGFlexDirection(C.YGNodeStyleGetFlexDirection(n.node))
 }
 
-func (n *Node) GetJustifyContent() FlexAlignment {
+func (n *Node) GetJustifyContent() FlexJustify {
 	return fromYGJustify(C.YGNodeStyleGetJustifyContent(n.node))
 }
 
-func (n *Node) GetAlignItems() FlexAlignment {
+func (n *Node) GetAlignItems() FlexAlign {
 	return fromYGAlign(C.YGNodeStyleGetAlignItems(n.node))
 }
 
-func (n *Node) GetAlignSelf() FlexAlignment {
+func (n *Node) GetAlignSelf() FlexAlign {
 	return fromYGAlign(C.YGNodeStyleGetAlignSelf(n.node))
 }
 
-func (n *Node) GetAlignContent() FlexAlignment {
+func (n *Node) GetAlignContent() FlexAlign {
 	return fromYGAlign(C.YGNodeStyleGetAlignContent(n.node))
 }
 
