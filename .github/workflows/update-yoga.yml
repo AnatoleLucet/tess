@@ -44,13 +44,24 @@ jobs:
         run: |
           CURRENT="${{ steps.current.outputs.version }}"
           NEW="${{ steps.version.outputs.version }}"
+          # tess currently relies on an unreleased version of Yoga.
+          # This is used to avoid downgrading to an older version of Yoga.
+          MIN_VERSION="v3.2.1"
 
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "Manual trigger, forcing update: $NEW"
             echo "should-update=true" >> $GITHUB_OUTPUT
           elif [ "$CURRENT" != "$NEW" ]; then
-            echo "Update needed: $CURRENT → $NEW"
-            echo "should-update=true" >> $GITHUB_OUTPUT
+            NEW_VER="${NEW#v}"
+            MIN_VER="${MIN_VERSION#v}"
+
+            if [ "$(printf '%s\n' "$MIN_VER" "$NEW_VER" | sort -V | tail -n1)" = "$NEW_VER" ] && [ "$NEW_VER" != "$MIN_VER" ]; then
+              echo "Update needed: $CURRENT → $NEW (> $MIN_VERSION)"
+              echo "should-update=true" >> $GITHUB_OUTPUT
+            else
+              echo "Skipping update: $NEW is not greater than minimum version $MIN_VERSION"
+              echo "should-update=false" >> $GITHUB_OUTPUT
+            fi
           else
             echo "Already up to date: $CURRENT"
             echo "should-update=false" >> $GITHUB_OUTPUT
