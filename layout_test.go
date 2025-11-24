@@ -8,11 +8,12 @@ import (
 
 func TestComputeLayout(t *testing.T) {
 	t.Run("computes layout with fixed dimensions", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(200))
 
-		err := node.ComputeLayout(Container{})
+		err = node.ComputeLayout(Container{})
 		assert.NoError(t, err)
 
 		layout := node.GetLayout()
@@ -23,11 +24,12 @@ func TestComputeLayout(t *testing.T) {
 	})
 
 	t.Run("computes layout with container constraints", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Percent(50))
 		node.SetHeight(Point(100))
 
-		err := node.ComputeLayout(Container{Width: 200, Height: 400})
+		err = node.ComputeLayout(Container{Width: 200, Height: 400})
 		assert.NoError(t, err)
 
 		layout := node.GetLayout()
@@ -38,11 +40,12 @@ func TestComputeLayout(t *testing.T) {
 	})
 
 	t.Run("computes layout with direction", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(200))
 
-		err := node.ComputeLayout(Container{Direction: LTR})
+		err = node.ComputeLayout(Container{Direction: LTR})
 		assert.NoError(t, err)
 
 		layout := node.GetLayout()
@@ -52,23 +55,26 @@ func TestComputeLayout(t *testing.T) {
 	})
 
 	t.Run("computes layout for flexbox children", func(t *testing.T) {
-		parent := NewNode()
+		parent, err := NewNode()
+		assert.NoError(t, err)
 		parent.SetFlexDirection(Row)
 		parent.SetWidth(Point(300))
 		parent.SetHeight(Point(100))
 
-		child1 := NewNode()
+		child1, err := NewNode()
+		assert.NoError(t, err)
 		child1.SetWidth(Point(100))
 		child1.SetHeight(Point(50))
 
-		child2 := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 		child2.SetWidth(Point(150))
 		child2.SetHeight(Point(50))
 
 		parent.AddChild(child1)
 		parent.AddChild(child2)
 
-		err := parent.ComputeLayout(Container{})
+		err = parent.ComputeLayout(Container{})
 		assert.NoError(t, err)
 
 		// Check parent layout
@@ -89,7 +95,8 @@ func TestComputeLayout(t *testing.T) {
 
 func TestLayoutDimensions(t *testing.T) {
 	t.Run("gets layout width and height", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(123.45))
 		node.SetHeight(Point(678.90))
 
@@ -104,7 +111,8 @@ func TestLayoutDimensions(t *testing.T) {
 	})
 
 	t.Run("gets raw width and height", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(200))
 		node.SetPadding(Edges{All: Point(10)})
@@ -122,11 +130,13 @@ func TestLayoutDimensions(t *testing.T) {
 
 func TestLayoutPosition(t *testing.T) {
 	t.Run("gets layout position", func(t *testing.T) {
-		parent := NewNode()
+		parent, err := NewNode()
+		assert.NoError(t, err)
 		parent.SetWidth(Point(300))
 		parent.SetHeight(Point(300))
 
-		child := NewNode()
+		child, err := NewNode()
+		assert.NoError(t, err)
 		child.SetWidth(Point(100))
 		child.SetHeight(Point(100))
 		child.SetPosition(Absolute)
@@ -146,7 +156,8 @@ func TestLayoutPosition(t *testing.T) {
 
 func TestLayoutEdges(t *testing.T) {
 	t.Run("gets padding from layout", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(100))
 		node.SetPadding(Edges{
@@ -168,7 +179,8 @@ func TestLayoutEdges(t *testing.T) {
 	})
 
 	t.Run("gets margin from layout", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(100))
 		node.SetMargin(Edges{
@@ -190,7 +202,8 @@ func TestLayoutEdges(t *testing.T) {
 	})
 
 	t.Run("gets border from layout", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(100))
 		node.SetBorder(Edges{
@@ -214,12 +227,14 @@ func TestLayoutEdges(t *testing.T) {
 
 func TestLayoutOverflow(t *testing.T) {
 	t.Run("detects overflow", func(t *testing.T) {
-		parent := NewNode()
+		parent, err := NewNode()
+		assert.NoError(t, err)
 		parent.SetWidth(Point(100))
 		parent.SetHeight(Point(100))
 		parent.SetOverflow(Hidden)
 
-		child := NewNode()
+		child, err := NewNode()
+		assert.NoError(t, err)
 		child.SetWidth(Point(200))
 		child.SetHeight(Point(200))
 
@@ -237,7 +252,8 @@ func TestLayoutOverflow(t *testing.T) {
 
 func TestHasNewLayout(t *testing.T) {
 	t.Run("detects new layout", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(100))
 
@@ -263,7 +279,8 @@ func TestHasNewLayout(t *testing.T) {
 
 func TestIsDirty(t *testing.T) {
 	t.Run("marks node as dirty", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(100))
 

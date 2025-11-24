@@ -4,13 +4,13 @@
 
 ```go
 // Create a root Node
-root := tess.NewNode()
+root, err := tess.NewNode()
 root.SetWidth(tess.Point(400))
 root.SetHeight(tess.Point(300))
 root.SetPadding(tess.Edges{All: tess.Point(20)})
 
 // Add a child to the root Node
-child := tess.NewNode()
+child, err := tess.NewNode()
 child.SetWidth(tess.Percent(100))
 child.SetHeight(tess.Point(150))
 root.AddChild(child)
@@ -64,14 +64,14 @@ import (
 
 func main() {
   // Create a 500x500 container with children aligned and justified to center
-  root := tess.NewNode()
+  root, err := tess.NewNode()
   root.SetWidth(tess.Point(500)) // Points are the base unit for all measurements (think pixels but with a scale factor applied)
   root.SetHeight(tess.Point(500))
   root.SetJustifyContent(tess.JustifyCenter)
   root.SetAlignItems(tess.AlignCenter)
 
   // Add a child of 200x200 to the container
-  child := tess.NewNode()
+  child, err := tess.NewNode()
   child.SetWidth(tess.Point(200))
   child.SetHeight(tess.Point(200))
   root.AddChild(child)
@@ -89,11 +89,11 @@ func main() {
 Apply styles to nodes either by calling setter methods or passing a `Style` struct at creation.
 
 ```go
-root := tess.NewNode()
+root, err := tess.NewNode()
 root.SetWidth(tess.Point(500))
 root.SetHeight(tess.Point(500))
 // or
-root := tess.NewNode(&tess.Style{
+root, err := tess.NewNode(&tess.Style{
   Width: tess.Point(500),
   Height: tess.Point(500),
 })
@@ -131,13 +131,13 @@ node.SetBorder(tess.Edges{Bottom: tess.Point(2)})
 After creating your node tree and setting styles, call `ComputeLayout()` to calculate positions and sizes:
 
 ```go
-root.ComputeLayout(tess.Container{})
+err := root.ComputeLayout(tess.Container{})
 ```
 
 The Container parameter specifies available space constraints. Pass an empty container to use the root node's dimensions, or specify width/height to constrain the layout:
 
 ```go
-root.ComputeLayout(tess.Container{
+err := root.ComputeLayout(tess.Container{
   Width: 1920,
   Height: 1080,
 
@@ -158,13 +158,12 @@ config := tess.NewConfig()
 config.SetPointScaleFactor(2.0) // e.g. 2x supersampling for high-DPI displays
 
 // Apply config to a node (and optionally its children if they share this config)
-root := tess.NewNode()
+root, err := tess.NewNode()
 root.SetConfig(config)
 ```
 
 ## TODOs
 
-- [ ] better error handling (avoid panics)
 - [ ] measurement callbacks
 - [ ] baseline callbacks
 - [ ] more examples

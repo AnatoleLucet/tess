@@ -8,7 +8,8 @@ import (
 
 func TestStyleDisplay(t *testing.T) {
 	t.Run("sets and gets display", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetDisplay(None)
 		assert.Equal(t, None, node.GetDisplay())
@@ -22,7 +23,8 @@ func TestStyleDisplay(t *testing.T) {
 
 func TestStyleFlexDirection(t *testing.T) {
 	t.Run("sets and gets flex direction", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetFlexDirection(Row)
 		assert.Equal(t, Row, node.GetFlexDirection())
@@ -39,7 +41,8 @@ func TestStyleFlexDirection(t *testing.T) {
 
 func TestStyleAlignment(t *testing.T) {
 	t.Run("sets and gets justify content", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetJustifyContent(JustifyCenter)
 		assert.Equal(t, JustifyCenter, node.GetJustifyContent())
@@ -51,7 +54,8 @@ func TestStyleAlignment(t *testing.T) {
 	})
 
 	t.Run("sets and gets align items", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetAlignItems(AlignStretch)
 		assert.Equal(t, AlignStretch, node.GetAlignItems())
@@ -63,7 +67,8 @@ func TestStyleAlignment(t *testing.T) {
 	})
 
 	t.Run("sets and gets align self", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetAlignSelf(AlignAuto)
 		assert.Equal(t, AlignAuto, node.GetAlignSelf())
@@ -75,7 +80,8 @@ func TestStyleAlignment(t *testing.T) {
 	})
 
 	t.Run("sets and gets align content", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetAlignContent(AlignSpaceAround)
 		assert.Equal(t, AlignSpaceAround, node.GetAlignContent())
@@ -86,7 +92,8 @@ func TestStyleAlignment(t *testing.T) {
 
 func TestStyleFlexWrap(t *testing.T) {
 	t.Run("sets and gets flex wrap", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetFlexWrap(Wrap)
 		assert.Equal(t, Wrap, node.GetFlexWrap())
@@ -100,7 +107,8 @@ func TestStyleFlexWrap(t *testing.T) {
 
 func TestStyleDirection(t *testing.T) {
 	t.Run("sets and gets direction", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetDirection(LTR)
 		assert.Equal(t, LTR, node.GetDirection())
@@ -114,7 +122,8 @@ func TestStyleDirection(t *testing.T) {
 
 func TestStyleDimensions(t *testing.T) {
 	t.Run("sets and gets width", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetWidth(Point(100))
 		assert.Equal(t, Point(100), node.GetWidth())
@@ -129,7 +138,8 @@ func TestStyleDimensions(t *testing.T) {
 	})
 
 	t.Run("sets and gets height", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetHeight(Point(200))
 		assert.Equal(t, Point(200), node.GetHeight())
@@ -141,7 +151,8 @@ func TestStyleDimensions(t *testing.T) {
 	})
 
 	t.Run("sets and gets min dimensions", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetMinWidth(Point(50))
 		assert.Equal(t, Point(50), node.GetMinWidth())
@@ -153,7 +164,8 @@ func TestStyleDimensions(t *testing.T) {
 	})
 
 	t.Run("sets and gets max dimensions", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetMaxWidth(Point(500))
 		assert.Equal(t, Point(500), node.GetMaxWidth())
@@ -167,7 +179,8 @@ func TestStyleDimensions(t *testing.T) {
 
 func TestStyleAspectRatio(t *testing.T) {
 	t.Run("sets and gets aspect ratio", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetAspectRatio(16.0 / 9.0)
 		assert.InDelta(t, 16.0/9.0, node.GetAspectRatio(), 0.001)
@@ -178,7 +191,8 @@ func TestStyleAspectRatio(t *testing.T) {
 
 func TestStyleFlex(t *testing.T) {
 	t.Run("sets and gets flex grow", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetFlexGrow(1.5)
 		assert.Equal(t, float32(1.5), node.GetFlexGrow())
@@ -187,7 +201,8 @@ func TestStyleFlex(t *testing.T) {
 	})
 
 	t.Run("sets and gets flex shrink", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetFlexShrink(0.5)
 		assert.Equal(t, float32(0.5), node.GetFlexShrink())
@@ -196,7 +211,8 @@ func TestStyleFlex(t *testing.T) {
 	})
 
 	t.Run("sets and gets flex basis", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetFlexBasis(Point(100))
 		assert.Equal(t, Point(100), node.GetFlexBasis())
@@ -213,7 +229,8 @@ func TestStyleFlex(t *testing.T) {
 
 func TestStylePosition(t *testing.T) {
 	t.Run("sets and gets position type", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetPosition(Absolute)
 		assert.Equal(t, Absolute, node.GetPosition())
@@ -225,7 +242,8 @@ func TestStylePosition(t *testing.T) {
 	})
 
 	t.Run("sets and gets position edges", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetTop(Point(10))
 		assert.Equal(t, Point(10), node.GetTop())
@@ -243,7 +261,8 @@ func TestStylePosition(t *testing.T) {
 	})
 
 	t.Run("sets position with percentage", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetTop(Percent(10))
 		assert.Equal(t, Percent(10), node.GetTop())
@@ -254,7 +273,8 @@ func TestStylePosition(t *testing.T) {
 
 func TestStyleOverflow(t *testing.T) {
 	t.Run("sets and gets overflow", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetOverflow(Hidden)
 		assert.Equal(t, Hidden, node.GetOverflow())
@@ -268,7 +288,8 @@ func TestStyleOverflow(t *testing.T) {
 
 func TestStyleBoxSizing(t *testing.T) {
 	t.Run("sets and gets box sizing", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetBoxSizing(BorderBox)
 		assert.Equal(t, BorderBox, node.GetBoxSizing())
@@ -282,7 +303,8 @@ func TestStyleBoxSizing(t *testing.T) {
 
 func TestStylePadding(t *testing.T) {
 	t.Run("sets and gets padding", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetPadding(Edges{
 			Top:    Point(10),
@@ -300,7 +322,8 @@ func TestStylePadding(t *testing.T) {
 	})
 
 	t.Run("sets padding with all shorthand", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetPadding(Edges{All: Point(15)})
 
@@ -313,7 +336,8 @@ func TestStylePadding(t *testing.T) {
 	})
 
 	t.Run("sets padding with percentage", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetPadding(Edges{All: Percent(10)})
 
@@ -325,7 +349,8 @@ func TestStylePadding(t *testing.T) {
 
 func TestStyleMargin(t *testing.T) {
 	t.Run("sets and gets margin", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetMargin(Edges{
 			Top:    Point(5),
@@ -343,7 +368,8 @@ func TestStyleMargin(t *testing.T) {
 	})
 
 	t.Run("sets margin with auto", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetMargin(Edges{
 			Left:  Auto(),
@@ -359,7 +385,8 @@ func TestStyleMargin(t *testing.T) {
 
 func TestStyleBorder(t *testing.T) {
 	t.Run("sets and gets border", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetBorder(Edges{
 			Top:    Point(1),
@@ -377,7 +404,8 @@ func TestStyleBorder(t *testing.T) {
 	})
 
 	t.Run("sets border with all shorthand", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetBorder(Edges{All: Point(2)})
 
@@ -392,7 +420,8 @@ func TestStyleBorder(t *testing.T) {
 
 func TestStyleGap(t *testing.T) {
 	t.Run("sets and gets gap", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetGap(Gap{
 			Row:    Point(10),
@@ -406,7 +435,8 @@ func TestStyleGap(t *testing.T) {
 	})
 
 	t.Run("sets gap with all shorthand", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		node.SetGap(Gap{All: Point(15)})
 
@@ -430,7 +460,8 @@ func TestStyleApply(t *testing.T) {
 			FlexGrow:       1.0,
 		}
 
-		node := NewNode(style)
+		node, err := NewNode(style)
+		assert.NoError(t, err)
 
 		assert.Equal(t, Flex, node.GetDisplay())
 		assert.Equal(t, Row, node.GetFlexDirection())
@@ -446,7 +477,8 @@ func TestStyleApply(t *testing.T) {
 	})
 
 	t.Run("applies style after creation", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 
 		style := &Style{
 			Width:  Point(100),
@@ -469,31 +501,11 @@ func TestStyleApply(t *testing.T) {
 			Height: Point(200),
 		}
 
-		node := NewNode(style1, style2)
+		node, err := NewNode(style1, style2)
+		assert.NoError(t, err)
 
 		assert.Equal(t, Point(100), node.GetWidth())
 		assert.Equal(t, Point(200), node.GetHeight())
-
-		node.Free()
-	})
-}
-
-func TestStyleChaining(t *testing.T) {
-	t.Run("chains style setters", func(t *testing.T) {
-		node := NewNode()
-
-		node.
-			SetWidth(Point(100)).
-			SetHeight(Point(200)).
-			SetFlexDirection(Row).
-			SetJustifyContent(JustifyCenter).
-			SetPadding(Edges{All: Point(10)})
-
-		assert.Equal(t, Point(100), node.GetWidth())
-		assert.Equal(t, Point(200), node.GetHeight())
-		assert.Equal(t, Row, node.GetFlexDirection())
-		assert.Equal(t, JustifyCenter, node.GetJustifyContent())
-		assert.Equal(t, Point(10), node.GetPadding().GetTop())
 
 		node.Free()
 	})

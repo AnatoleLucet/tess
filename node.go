@@ -28,18 +28,17 @@ type Node struct {
 	config *Config
 }
 
-func NewNode(styles ...*Style) *Node {
+func NewNode(styles ...*Style) (*Node, error) {
 	config := getDefaultConfig()
 
-	node := &Node{
-		node:   C.YGNodeNewWithConfig(config.config),
-		config: config,
-	}
+	node := &Node{node: C.YGNodeNewWithConfig(config.config), config: config}
 	for _, style := range styles {
-		node.Apply(style)
+		if err := node.Apply(style); err != nil {
+			return nil, err
+		}
 	}
 
-	return node
+	return node, nil
 }
 
 func (n *Node) Clone() *Node {
@@ -68,9 +67,13 @@ func (n *Node) GetNodeType() NodeType {
 	return fromYGNodeType(C.YGNodeGetNodeType(n.node))
 }
 
-func (n *Node) SetNodeType(nodeType NodeType) {
-	ygNodeType, _ := toYGNodeType(nodeType)
+func (n *Node) SetNodeType(nodeType NodeType) error {
+	ygNodeType, err := toYGNodeType(nodeType)
+	if err != nil {
+		return err
+	}
 	C.YGNodeSetNodeType(n.node, ygNodeType)
+	return nil
 }
 
 func (n *Node) GetChildCount() int {

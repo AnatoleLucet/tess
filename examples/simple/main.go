@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// Create root container
-	root := tess.NewNode(&tess.Style{
+	root, _ := tess.NewNode(&tess.Style{
 		Width:  tess.Point(400),
 		Height: tess.Point(300),
 
@@ -22,7 +22,7 @@ func main() {
 	defer root.Free()
 
 	// Create first child with fixed dimensions
-	child1 := tess.NewNode(&tess.Style{
+	child1, _ := tess.NewNode(&tess.Style{
 		Width:  tess.Point(100),
 		Height: tess.Point(100),
 		Margin: tess.Edges{All: tess.Point(5)},
@@ -30,7 +30,7 @@ func main() {
 	defer child1.Free()
 
 	// Create second child with percentage-based width
-	child2 := tess.NewNode(&tess.Style{
+	child2, _ := tess.NewNode(&tess.Style{
 		Width:  tess.Percent(30),
 		Height: tess.Point(120),
 
@@ -39,7 +39,7 @@ func main() {
 	defer child2.Free()
 
 	// Create third child with flex grow
-	child3 := tess.NewNode(&tess.Style{
+	child3, _ := tess.NewNode(&tess.Style{
 		FlexGrow: 1,
 		Height:   tess.Point(80),
 
@@ -53,7 +53,7 @@ func main() {
 	root.AddChild(child3)
 
 	// Calculate layout
-	root.ComputeLayout(tess.Container{Direction: tess.LTR})
+	_ = root.ComputeLayout(tess.Container{Direction: tess.LTR})
 
 	// Print results
 	fmt.Println("=== Tess Layout Example ===")

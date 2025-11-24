@@ -44,55 +44,79 @@ type Style struct {
 	BoxSizing BoxSizingType
 }
 
-func (n *Node) SetDisplay(display DisplayType) *Node {
-	ygDisplay, _ := toYGDisplay(display)
+func (n *Node) SetDisplay(display DisplayType) error {
+	ygDisplay, err := toYGDisplay(display)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetDisplay(n.node, ygDisplay)
-	return n
+	return nil
 }
 
-func (n *Node) SetFlexDirection(direction FlexDirection) *Node {
-	ygDirection, _ := toYGFlexDirection(direction)
+func (n *Node) SetFlexDirection(direction FlexDirection) error {
+	ygDirection, err := toYGFlexDirection(direction)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetFlexDirection(n.node, ygDirection)
-	return n
+	return nil
 }
 
-func (n *Node) SetJustifyContent(justify FlexJustify) *Node {
-	ygJustify, _ := toYGJustify(justify)
+func (n *Node) SetJustifyContent(justify FlexJustify) error {
+	ygJustify, err := toYGJustify(justify)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetJustifyContent(n.node, ygJustify)
-	return n
+	return nil
 }
 
-func (n *Node) SetAlignItems(align FlexAlign) *Node {
-	ygAlign, _ := toYGAlign(align)
+func (n *Node) SetAlignItems(align FlexAlign) error {
+	ygAlign, err := toYGAlign(align)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetAlignItems(n.node, ygAlign)
-	return n
+	return nil
 }
 
-func (n *Node) SetAlignSelf(align FlexAlign) *Node {
-	ygAlign, _ := toYGAlign(align)
+func (n *Node) SetAlignSelf(align FlexAlign) error {
+	ygAlign, err := toYGAlign(align)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetAlignSelf(n.node, ygAlign)
-	return n
+	return nil
 }
 
-func (n *Node) SetAlignContent(align FlexAlign) *Node {
-	ygAlign, _ := toYGAlign(align)
+func (n *Node) SetAlignContent(align FlexAlign) error {
+	ygAlign, err := toYGAlign(align)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetAlignContent(n.node, ygAlign)
-	return n
+	return nil
 }
 
-func (n *Node) SetFlexWrap(wrap FlexWrap) *Node {
-	ygWrap, _ := toYGWrap(wrap)
+func (n *Node) SetFlexWrap(wrap FlexWrap) error {
+	ygWrap, err := toYGWrap(wrap)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetFlexWrap(n.node, ygWrap)
-	return n
+	return nil
 }
 
-func (n *Node) SetDirection(direction DirectionType) *Node {
-	ygDirection, _ := toYGDirection(direction)
+func (n *Node) SetDirection(direction DirectionType) error {
+	ygDirection, err := toYGDirection(direction)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetDirection(n.node, ygDirection)
-	return n
+	return nil
 }
 
-func (n *Node) SetWidth(width Value) *Node {
+func (n *Node) SetWidth(width Value) error {
 	switch width.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetWidth(n.node, C.float(width.value))
@@ -107,10 +131,10 @@ func (n *Node) SetWidth(width Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetWidthStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetHeight(height Value) *Node {
+func (n *Node) SetHeight(height Value) error {
 	switch height.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetHeight(n.node, C.float(height.value))
@@ -125,10 +149,10 @@ func (n *Node) SetHeight(height Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetHeightStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetMinWidth(minWidth Value) *Node {
+func (n *Node) SetMinWidth(minWidth Value) error {
 	switch minWidth.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMinWidth(n.node, C.float(minWidth.value))
@@ -141,10 +165,10 @@ func (n *Node) SetMinWidth(minWidth Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetMinWidthStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetMinHeight(minHeight Value) *Node {
+func (n *Node) SetMinHeight(minHeight Value) error {
 	switch minHeight.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMinHeight(n.node, C.float(minHeight.value))
@@ -157,10 +181,10 @@ func (n *Node) SetMinHeight(minHeight Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetMinHeightStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetMaxWidth(maxWidth Value) *Node {
+func (n *Node) SetMaxWidth(maxWidth Value) error {
 	switch maxWidth.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMaxWidth(n.node, C.float(maxWidth.value))
@@ -173,10 +197,10 @@ func (n *Node) SetMaxWidth(maxWidth Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetMaxWidthStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetMaxHeight(maxHeight Value) *Node {
+func (n *Node) SetMaxHeight(maxHeight Value) error {
 	switch maxHeight.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMaxHeight(n.node, C.float(maxHeight.value))
@@ -189,25 +213,25 @@ func (n *Node) SetMaxHeight(maxHeight Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetMaxHeightStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetAspectRatio(aspectRatio float32) *Node {
+func (n *Node) SetAspectRatio(aspectRatio float32) error {
 	C.YGNodeStyleSetAspectRatio(n.node, C.float(aspectRatio))
-	return n
+	return nil
 }
 
-func (n *Node) SetFlexGrow(flexGrow float32) *Node {
+func (n *Node) SetFlexGrow(flexGrow float32) error {
 	C.YGNodeStyleSetFlexGrow(n.node, C.float(flexGrow))
-	return n
+	return nil
 }
 
-func (n *Node) SetFlexShrink(flexShrink float32) *Node {
+func (n *Node) SetFlexShrink(flexShrink float32) error {
 	C.YGNodeStyleSetFlexShrink(n.node, C.float(flexShrink))
-	return n
+	return nil
 }
 
-func (n *Node) SetFlexBasis(flexBasis Value) *Node {
+func (n *Node) SetFlexBasis(flexBasis Value) error {
 	switch flexBasis.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetFlexBasis(n.node, C.float(flexBasis.value))
@@ -222,16 +246,19 @@ func (n *Node) SetFlexBasis(flexBasis Value) *Node {
 	case UnitStretch:
 		C.YGNodeStyleSetFlexBasisStretch(n.node)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetPosition(position PositionType) *Node {
-	ygPosition, _ := toYGPositionType(position)
+func (n *Node) SetPosition(position PositionType) error {
+	ygPosition, err := toYGPositionType(position)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetPositionType(n.node, ygPosition)
-	return n
+	return nil
 }
 
-func (n *Node) SetTop(top Value) *Node {
+func (n *Node) SetTop(top Value) error {
 	switch top.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeTop, C.float(top.value))
@@ -240,10 +267,10 @@ func (n *Node) SetTop(top Value) *Node {
 	case UnitAuto:
 		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeTop)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetRight(right Value) *Node {
+func (n *Node) SetRight(right Value) error {
 	switch right.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeRight, C.float(right.value))
@@ -252,10 +279,10 @@ func (n *Node) SetRight(right Value) *Node {
 	case UnitAuto:
 		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeRight)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetBottom(bottom Value) *Node {
+func (n *Node) SetBottom(bottom Value) error {
 	switch bottom.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeBottom, C.float(bottom.value))
@@ -264,10 +291,10 @@ func (n *Node) SetBottom(bottom Value) *Node {
 	case UnitAuto:
 		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeBottom)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetLeft(left Value) *Node {
+func (n *Node) SetLeft(left Value) error {
 	switch left.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeLeft, C.float(left.value))
@@ -276,24 +303,30 @@ func (n *Node) SetLeft(left Value) *Node {
 	case UnitAuto:
 		C.YGNodeStyleSetPositionAuto(n.node, C.YGEdgeLeft)
 	}
-	return n
+	return nil
 }
 
-func (n *Node) SetOverflow(overflow OverflowType) *Node {
-	ygOverflow, _ := toYGOverflow(overflow)
+func (n *Node) SetOverflow(overflow OverflowType) error {
+	ygOverflow, err := toYGOverflow(overflow)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetOverflow(n.node, ygOverflow)
-	return n
+	return nil
 }
 
-func (n *Node) SetBoxSizing(boxSizing BoxSizingType) *Node {
-	ygBoxSizing, _ := toYGBoxSizing(boxSizing)
+func (n *Node) SetBoxSizing(boxSizing BoxSizingType) error {
+	ygBoxSizing, err := toYGBoxSizing(boxSizing)
+	if err != nil {
+		return err
+	}
 	C.YGNodeStyleSetBoxSizing(n.node, ygBoxSizing)
-	return n
+	return nil
 }
 
 // SetPadding sets the padding for the node.
 // Note: Padding can only be set in points or percent.
-func (n *Node) SetPadding(edges Edges) *Node {
+func (n *Node) SetPadding(edges Edges) error {
 	setPaddingEdge := func(edge C.YGEdge, value Value) {
 		switch value.unit {
 		case UnitPoint:
@@ -340,12 +373,12 @@ func (n *Node) SetPadding(edges Edges) *Node {
 		setPaddingEdge(C.YGEdgeRight, edges.Right)
 	}
 
-	return n
+	return nil
 }
 
 // SetMargin sets the margin widths for the node.
 // Note: Margins can be set in points, percent, or auto.
-func (n *Node) SetMargin(edges Edges) *Node {
+func (n *Node) SetMargin(edges Edges) error {
 	setMarginEdge := func(edge C.YGEdge, value Value) {
 		switch value.unit {
 		case UnitPoint:
@@ -394,12 +427,12 @@ func (n *Node) SetMargin(edges Edges) *Node {
 		setMarginEdge(C.YGEdgeRight, edges.Right)
 	}
 
-	return n
+	return nil
 }
 
 // SetBorder sets the border widths for the node.
 // Note: Borders can only be set in points.
-func (n *Node) SetBorder(edges Edges) *Node {
+func (n *Node) SetBorder(edges Edges) error {
 	setBorderEdge := func(edge C.YGEdge, value Value) {
 		if value.unit == UnitPoint {
 			C.YGNodeStyleSetBorder(n.node, edge, C.float(value.value))
@@ -443,12 +476,12 @@ func (n *Node) SetBorder(edges Edges) *Node {
 		setBorderEdge(C.YGEdgeRight, edges.Right)
 	}
 
-	return n
+	return nil
 }
 
 // SetGap sets the gap sizes for the node.
 // Note: Gaps can be set in points or percent.
-func (n *Node) SetGap(gap Gap) *Node {
+func (n *Node) SetGap(gap Gap) error {
 	setGapGutter := func(gutter C.YGGutter, value Value) {
 		switch value.unit {
 		case UnitPoint:
@@ -467,7 +500,8 @@ func (n *Node) SetGap(gap Gap) *Node {
 	if gap.Column.unit != UnitUndefined {
 		setGapGutter(C.YGGutterColumn, gap.Column)
 	}
-	return n
+
+	return nil
 }
 
 func (n *Node) GetDisplay() DisplayType {
@@ -587,67 +621,125 @@ func (n *Node) GetGap() *StyleGap {
 }
 
 // Apply applies a Style to the node
-func (n *Node) Apply(style *Style) *Node {
-	n.SetDisplay(style.Display)
-	n.SetFlexDirection(style.FlexDirection)
-	n.SetJustifyContent(style.JustifyContent)
-	n.SetAlignItems(style.AlignItems)
-	n.SetAlignSelf(style.AlignSelf)
-	n.SetAlignContent(style.AlignContent)
-	n.SetFlexWrap(style.FlexWrap)
-	n.SetDirection(style.Direction)
+func (n *Node) Apply(style *Style) error {
+	if err := n.SetDisplay(style.Display); err != nil {
+		return err
+	}
+	if err := n.SetFlexDirection(style.FlexDirection); err != nil {
+		return err
+	}
+	if err := n.SetJustifyContent(style.JustifyContent); err != nil {
+		return err
+	}
+	if err := n.SetAlignItems(style.AlignItems); err != nil {
+		return err
+	}
+	if err := n.SetAlignSelf(style.AlignSelf); err != nil {
+		return err
+	}
+	if err := n.SetAlignContent(style.AlignContent); err != nil {
+		return err
+	}
+	if err := n.SetFlexWrap(style.FlexWrap); err != nil {
+		return err
+	}
+	if err := n.SetDirection(style.Direction); err != nil {
+		return err
+	}
 
 	if style.Width.unit != UnitUndefined {
-		n.SetWidth(style.Width)
+		if err := n.SetWidth(style.Width); err != nil {
+			return err
+		}
 	}
 	if style.Height.unit != UnitUndefined {
-		n.SetHeight(style.Height)
+		if err := n.SetHeight(style.Height); err != nil {
+			return err
+		}
 	}
 	if style.MinWidth.unit != UnitUndefined {
-		n.SetMinWidth(style.MinWidth)
+		if err := n.SetMinWidth(style.MinWidth); err != nil {
+			return err
+		}
 	}
 	if style.MinHeight.unit != UnitUndefined {
-		n.SetMinHeight(style.MinHeight)
+		if err := n.SetMinHeight(style.MinHeight); err != nil {
+			return err
+		}
 	}
 	if style.MaxWidth.unit != UnitUndefined {
-		n.SetMaxWidth(style.MaxWidth)
+		if err := n.SetMaxWidth(style.MaxWidth); err != nil {
+			return err
+		}
 	}
 	if style.MaxHeight.unit != UnitUndefined {
-		n.SetMaxHeight(style.MaxHeight)
+		if err := n.SetMaxHeight(style.MaxHeight); err != nil {
+			return err
+		}
 	}
 	if style.AspectRatio != 0 {
-		n.SetAspectRatio(style.AspectRatio)
+		if err := n.SetAspectRatio(style.AspectRatio); err != nil {
+			return err
+		}
 	}
 
-	n.SetPadding(style.Padding)
-	n.SetMargin(style.Margin)
-	n.SetBorder(style.Border)
-	n.SetGap(style.Gap)
+	if err := n.SetPadding(style.Padding); err != nil {
+		return err
+	}
+	if err := n.SetMargin(style.Margin); err != nil {
+		return err
+	}
+	if err := n.SetBorder(style.Border); err != nil {
+		return err
+	}
+	if err := n.SetGap(style.Gap); err != nil {
+		return err
+	}
 
-	n.SetFlexGrow(style.FlexGrow)
-	n.SetFlexShrink(style.FlexShrink)
+	if err := n.SetFlexGrow(style.FlexGrow); err != nil {
+		return err
+	}
+	if err := n.SetFlexShrink(style.FlexShrink); err != nil {
+		return err
+	}
 	if style.FlexBasis.unit != UnitUndefined {
-		n.SetFlexBasis(style.FlexBasis)
+		if err := n.SetFlexBasis(style.FlexBasis); err != nil {
+			return err
+		}
 	}
 
-	n.SetPosition(style.Position)
+	if err := n.SetPosition(style.Position); err != nil {
+		return err
+	}
 	if style.Top.unit != UnitUndefined {
-		n.SetTop(style.Top)
+		if err := n.SetTop(style.Top); err != nil {
+			return err
+		}
 	}
 	if style.Right.unit != UnitUndefined {
-		n.SetRight(style.Right)
+		if err := n.SetRight(style.Right); err != nil {
+			return err
+		}
 	}
 	if style.Bottom.unit != UnitUndefined {
-		n.SetBottom(style.Bottom)
+		if err := n.SetBottom(style.Bottom); err != nil {
+			return err
+		}
 	}
 	if style.Left.unit != UnitUndefined {
-		n.SetLeft(style.Left)
+		if err := n.SetLeft(style.Left); err != nil {
+			return err
+		}
 	}
 
-	n.SetOverflow(style.Overflow)
-	n.SetBoxSizing(style.BoxSizing)
+	if err := n.SetOverflow(style.Overflow); err != nil {
+		return err
+	}
+	if err := n.SetBoxSizing(style.BoxSizing); err != nil {
+		return err
+	}
 
-	return n
+	return nil
 }
 
 type StyleGap struct {

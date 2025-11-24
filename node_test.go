@@ -8,7 +8,8 @@ import (
 
 func TestNewNode(t *testing.T) {
 	t.Run("creates a new node", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		assert.NotNil(t, node)
 		assert.Equal(t, NodeTypeDefault, node.GetNodeType())
 		node.Free()
@@ -19,7 +20,8 @@ func TestNewNode(t *testing.T) {
 			Width:  Point(100),
 			Height: Point(200),
 		}
-		node := NewNode(style)
+		node, err := NewNode(style)
+		assert.NoError(t, err)
 		assert.NotNil(t, node)
 		assert.Equal(t, Point(100), node.GetWidth())
 		assert.Equal(t, Point(200), node.GetHeight())
@@ -29,7 +31,8 @@ func TestNewNode(t *testing.T) {
 
 func TestNodeClone(t *testing.T) {
 	t.Run("clones a node", func(t *testing.T) {
-		original := NewNode()
+		original, err := NewNode()
+		assert.NoError(t, err)
 		original.SetWidth(Point(100))
 
 		clone := original.Clone()
@@ -43,7 +46,8 @@ func TestNodeClone(t *testing.T) {
 
 func TestNodeFree(t *testing.T) {
 	t.Run("frees a node", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.Free()
 		// Calling Free again should not panic
 		node.Free()
@@ -52,9 +56,10 @@ func TestNodeFree(t *testing.T) {
 
 func TestNodeFreeRecursive(t *testing.T) {
 	t.Run("frees a node and its children", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 
 		parent.AddChild(child1)
 		parent.AddChild(child2)
@@ -67,7 +72,8 @@ func TestNodeFreeRecursive(t *testing.T) {
 
 func TestNodeReset(t *testing.T) {
 	t.Run("resets a node", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		node.SetWidth(Point(100))
 		node.SetHeight(Point(200))
 
@@ -83,7 +89,8 @@ func TestNodeReset(t *testing.T) {
 
 func TestNodeType(t *testing.T) {
 	t.Run("gets and sets node type", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
 		assert.Equal(t, NodeTypeDefault, node.GetNodeType())
 
 		node.SetNodeType(NodeTypeText)
@@ -95,10 +102,12 @@ func TestNodeType(t *testing.T) {
 
 func TestNodeChildren(t *testing.T) {
 	t.Run("gets child count", func(t *testing.T) {
-		parent := NewNode()
+		parent, err := NewNode()
+		assert.NoError(t, err)
 		assert.Equal(t, 0, parent.GetChildCount())
 
-		child := NewNode()
+		child, err := NewNode()
+		assert.NoError(t, err)
 		parent.AddChild(child)
 		assert.Equal(t, 1, parent.GetChildCount())
 
@@ -106,8 +115,9 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("adds child", func(t *testing.T) {
-		parent := NewNode()
-		child := NewNode()
+		parent, err := NewNode()
+		child, err := NewNode()
+		assert.NoError(t, err)
 
 		parent.AddChild(child)
 		assert.Equal(t, 1, parent.GetChildCount())
@@ -116,9 +126,10 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("gets child by index", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 
 		child1.SetWidth(Point(100))
 		child2.SetWidth(Point(200))
@@ -138,16 +149,18 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("returns nil for invalid child index", func(t *testing.T) {
-		parent := NewNode()
+		parent, err := NewNode()
+		assert.NoError(t, err)
 		child := parent.GetChild(10)
 		assert.Nil(t, child)
 		parent.Free()
 	})
 
 	t.Run("sets children", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 
 		parent.SetChildren([]*Node{child1, child2})
 		assert.Equal(t, 2, parent.GetChildCount())
@@ -156,8 +169,9 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("sets empty children array", func(t *testing.T) {
-		parent := NewNode()
-		child := NewNode()
+		parent, err := NewNode()
+		child, err := NewNode()
+		assert.NoError(t, err)
 		parent.AddChild(child)
 
 		assert.Equal(t, 1, parent.GetChildCount())
@@ -169,10 +183,11 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("inserts child at index", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
-		child3 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		child3, err := NewNode()
+		assert.NoError(t, err)
 
 		child1.SetWidth(Point(100))
 		child2.SetWidth(Point(200))
@@ -191,9 +206,10 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("swaps child at index", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 
 		child1.SetWidth(Point(100))
 		child2.SetWidth(Point(200))
@@ -208,9 +224,10 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("removes child", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 
 		parent.AddChild(child1)
 		parent.AddChild(child2)
@@ -224,9 +241,10 @@ func TestNodeChildren(t *testing.T) {
 	})
 
 	t.Run("removes all children", func(t *testing.T) {
-		parent := NewNode()
-		child1 := NewNode()
-		child2 := NewNode()
+		parent, err := NewNode()
+		child1, err := NewNode()
+		child2, err := NewNode()
+		assert.NoError(t, err)
 
 		parent.AddChild(child1)
 		parent.AddChild(child2)
@@ -243,8 +261,9 @@ func TestNodeChildren(t *testing.T) {
 
 func TestNodeParent(t *testing.T) {
 	t.Run("gets parent node", func(t *testing.T) {
-		parent := NewNode()
-		child := NewNode()
+		parent, err := NewNode()
+		child, err := NewNode()
+		assert.NoError(t, err)
 
 		assert.Nil(t, child.GetParent())
 
@@ -258,7 +277,9 @@ func TestNodeParent(t *testing.T) {
 
 func TestNodeConfig(t *testing.T) {
 	t.Run("has default config set", func(t *testing.T) {
-		node := NewNode()
+		node, err := NewNode()
+		assert.NoError(t, err)
+
 		config := node.GetConfig()
 		assert.NotNil(t, config)
 		node.Free()
