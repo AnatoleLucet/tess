@@ -42,6 +42,57 @@ func TestNodeClone(t *testing.T) {
 		original.Free()
 		clone.Free()
 	})
+
+	t.Run("clones a node with children", func(t *testing.T) {
+		original, err := NewNode()
+		assert.NoError(t, err)
+
+		originalChild, err := NewNode()
+		assert.NoError(t, err)
+		original.AddChild(originalChild)
+
+		clone := original.Clone()
+		assert.NotNil(t, clone)
+
+		child := clone.GetChild(0)
+		assert.NotNil(t, child)
+
+		child.SetWidth(Point(200))
+		assert.Equal(t, Point(200), child.GetWidth(), "cloned child's width should be independent")
+		assert.Equal(t, Auto(), originalChild.GetWidth(), "original child's width should remain unchanged")
+
+		original.Free()
+		clone.Free()
+	})
+
+	t.Run("clones a node with nested children", func(t *testing.T) {
+		original, err := NewNode()
+		assert.NoError(t, err)
+
+		parentChild, err := NewNode()
+		assert.NoError(t, err)
+		original.AddChild(parentChild)
+
+		nestedChild, err := NewNode()
+		assert.NoError(t, err)
+		parentChild.AddChild(nestedChild)
+
+		clone := original.Clone()
+		assert.NotNil(t, clone)
+
+		clonedParentChild := clone.GetChild(0)
+		assert.NotNil(t, clonedParentChild)
+
+		clonedNestedChild := clonedParentChild.GetChild(0)
+		assert.NotNil(t, clonedNestedChild)
+
+		clonedNestedChild.SetHeight(Point(150))
+		assert.Equal(t, Point(150), clonedNestedChild.GetHeight(), "cloned nested child's height should be independent")
+		assert.Equal(t, Auto(), nestedChild.GetHeight(), "original nested child's height should remain unchanged")
+
+		original.Free()
+		clone.Free()
+	})
 }
 
 func TestNodeFree(t *testing.T) {
