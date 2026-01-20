@@ -42,16 +42,16 @@ func NewNode(styles ...*Style) (*Node, error) {
 }
 
 func (n *Node) Clone() *Node {
-	cloned := &Node{node: C.YGNodeClone(n.node)}
-	cloned.RemoveAllChildren()
+	clone := &Node{node: C.YGNodeClone(n.node)}
+	clone.RemoveAllChildren()
 
 	for i := 0; i < n.GetChildCount(); i++ {
 		child := n.GetChild(i)
 		clonedChild := child.Clone()
-		cloned.AddChild(clonedChild)
+		clone.AddChild(clonedChild)
 	}
 
-	return cloned
+	return clone
 }
 
 func (n *Node) Free() {

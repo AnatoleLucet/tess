@@ -43,6 +43,54 @@ func (l *Layout) HadOverflow() bool {
 	return bool(C.YGNodeLayoutGetHadOverflow(l.node))
 }
 
+func (l *Layout) AbsoluteTop() float32 {
+	var top float32
+
+	node := &Node{node: l.node}
+	for node != nil {
+		top += node.GetLayout().Top()
+		node = node.GetParent()
+	}
+
+	return top
+}
+
+func (l *Layout) AbsoluteLeft() float32 {
+	var left float32
+
+	node := &Node{node: l.node}
+	for node != nil {
+		left += node.GetLayout().Left()
+		node = node.GetParent()
+	}
+
+	return left
+}
+
+func (l *Layout) AbsoluteBottom() float32 {
+	var bottom float32
+
+	node := &Node{node: l.node}
+	for node != nil {
+		bottom += node.GetLayout().Bottom()
+		node = node.GetParent()
+	}
+
+	return bottom
+}
+
+func (l *Layout) AbsoluteRight() float32 {
+	var right float32
+
+	node := &Node{node: l.node}
+	for node != nil {
+		right += node.GetLayout().Right()
+		node = node.GetParent()
+	}
+
+	return right
+}
+
 type LayoutEdges struct {
 	typ  layerEdgeType
 	node C.YGNodeRef

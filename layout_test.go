@@ -299,3 +299,94 @@ func TestIsDirty(t *testing.T) {
 		node.Free()
 	})
 }
+
+func TestAbsolutePosition(t *testing.T) {
+	t.Run("gets absolute position for single node", func(t *testing.T) {
+		node, err := NewNode()
+		assert.NoError(t, err)
+		node.SetWidth(Point(100))
+		node.SetHeight(Point(100))
+
+		node.ComputeLayout(Container{})
+		layout := node.GetLayout()
+
+		assert.Equal(t, float32(0), layout.AbsoluteTop())
+		assert.Equal(t, float32(0), layout.AbsoluteLeft())
+		assert.Equal(t, float32(0), layout.AbsoluteBottom())
+		assert.Equal(t, float32(0), layout.AbsoluteRight())
+
+		node.Free()
+	})
+
+	t.Run("gets absolute position through parent hierarchy", func(t *testing.T) {
+		// Create a 3-level hierarchy:
+		// root (padding 10) -> parent (offset 20,20) -> child (offset 30,30)
+		root, err := NewNode()
+		assert.NoError(t, err)
+		root.SetWidth(Point(300))
+		root.SetHeight(Point(300))
+		root.SetPadding(Edges{All: Point(10)})
+
+		parent, err := NewNode()
+		assert.NoError(t, err)
+		parent.SetWidth(Point(200))
+		parent.SetHeight(Point(200))
+		parent.SetMargin(Edges{Top: Point(20), Left: Point(20)})
+
+		child, err := NewNode()
+		assert.NoError(t, err)
+		child.SetWidth(Point(50))
+		child.SetHeight(Point(50))
+		child.SetMargin(Edges{Top: Point(30), Left: Point(30)})
+
+		root.AddChild(parent)
+		parent.AddChild(child)
+
+		root.ComputeLayout(Container{})
+
+		// Check parent's absolute position (should include root's padding)
+		parentLayout := parent.GetLayout()
+		assert.Equal(t, float32(10+20), parentLayout.AbsoluteTop())  // root padding + parent margin
+		assert.Equal(t, float32(10+20), parentLayout.AbsoluteLeft()) // root padding + parent margin
+
+		// Check child's absolute position (should include all offsets)
+		childLayout := child.GetLayout()
+		assert.Equal(t, float32(10+20+30), childLayout.AbsoluteTop())  // root padding + parent margin + child margin
+		assert.Equal(t, float32(10+20+30), childLayout.AbsoluteLeft()) // root padding + parent margin + child margin
+
+		root.FreeRecursive()
+	})
+
+	t.Run("gets absolute position with row flex direction", func(t *testing.T) {
+		root, err := NewNode()
+		assert.NoError(t, err)
+		root.SetWidth(Point(300))
+		root.SetHeight(Point(100))
+		root.SetFlexDirection(Row)
+
+		child1, err := NewNode()
+		assert.NoError(t, err)
+		child1.SetWidth(Point(100))
+		child1.SetHeight(Point(50))
+
+		child2, err := NewNode()
+		assert.NoError(t, err)
+		child2.SetWidth(Point(100))
+		child2.SetHeight(Point(50))
+
+		root.AddChild(child1)
+		root.AddChild(child2)
+
+		root.ComputeLayout(Container{})
+
+		child1Layout := child1.GetLayout()
+		child2Layout := child2.GetLayout()
+
+		// child1 starts at left 0
+		assert.Equal(t, float32(0), child1Layout.AbsoluteLeft())
+		// child2 starts after child1 (at left 100)
+		assert.Equal(t, float32(100), child2Layout.AbsoluteLeft())
+
+		root.FreeRecursive()
+	})
+}
