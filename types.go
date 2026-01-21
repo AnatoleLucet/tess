@@ -220,3 +220,29 @@ func (t BoxSizingType) String() string {
 
 	return "unknown"
 }
+
+type MeasureMode int
+
+const (
+	MeasureModeUndefined MeasureMode = iota
+	MeasureModeExactly
+	MeasureModeAtMost
+)
+
+func (m MeasureMode) String() string {
+	switch m {
+	case MeasureModeUndefined:
+		return "undefined"
+	case MeasureModeExactly:
+		return "exactly"
+	case MeasureModeAtMost:
+		return "at-most"
+	}
+
+	return "unknown"
+}
+
+type Size struct {
+	Width  float32
+	Height float32
+}

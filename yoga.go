@@ -342,3 +342,15 @@ func fromYGBoxSizing(ygBoxSizing C.YGBoxSizing) BoxSizingType {
 	}
 	return ContentBox
 }
+
+func fromYGMeasureMode(ygMeasureMode C.YGMeasureMode) MeasureMode {
+	switch ygMeasureMode {
+	case C.YGMeasureModeUndefined:
+		return MeasureModeUndefined
+	case C.YGMeasureModeExactly:
+		return MeasureModeExactly
+	case C.YGMeasureModeAtMost:
+		return MeasureModeAtMost
+	}
+	return MeasureModeUndefined
+}

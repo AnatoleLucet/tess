@@ -164,7 +164,7 @@ root.SetConfig(config)
 
 ## TODOs
 
-- [ ] measurement callbacks
+- [x] measurement callbacks
 - [ ] baseline callbacks
 - [ ] more examples
 
