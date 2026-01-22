@@ -51,7 +51,7 @@ func TestNodeClone(t *testing.T) {
 		assert.NoError(t, err)
 		original.AddChild(originalChild)
 
-		clone := original.Clone()
+		clone := original.CloneRecursive()
 		assert.NotNil(t, clone)
 
 		child := clone.GetChild(0)
@@ -77,7 +77,7 @@ func TestNodeClone(t *testing.T) {
 		assert.NoError(t, err)
 		parentChild.AddChild(nestedChild)
 
-		clone := original.Clone()
+		clone := original.CloneRecursive()
 		assert.NotNil(t, clone)
 
 		clonedParentChild := clone.GetChild(0)

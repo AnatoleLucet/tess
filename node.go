@@ -42,12 +42,16 @@ func NewNode(styles ...*Style) (*Node, error) {
 }
 
 func (n *Node) Clone() *Node {
+	return &Node{node: C.YGNodeClone(n.node)}
+}
+
+func (n *Node) CloneRecursive() *Node {
 	clone := &Node{node: C.YGNodeClone(n.node)}
 	clone.RemoveAllChildren()
 
 	for i := 0; i < n.GetChildCount(); i++ {
 		child := n.GetChild(i)
-		clonedChild := child.Clone()
+		clonedChild := child.CloneRecursive()
 		clone.AddChild(clonedChild)
 	}
 
