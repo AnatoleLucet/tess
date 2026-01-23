@@ -2,6 +2,7 @@ package tess
 
 /*
 #include <yoga/Yoga.h>
+#include <stdint.h>
 
 extern YGSize goMeasureCallback(YGNodeConstRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);
 
@@ -12,19 +13,24 @@ static inline void tessSetMeasureFunc(YGNodeRef node) {
 static inline void tessUnsetMeasureFunc(YGNodeRef node) {
 	YGNodeSetMeasureFunc(node, NULL);
 }
+
+static inline void tessSetNodeContext(YGNodeRef node, uintptr_t handle) {
+	YGNodeSetContext(node, (void*)handle);
+}
+
+static inline uintptr_t tessGetNodeContext(YGNodeRef node) {
+	return (uintptr_t)YGNodeGetContext(node);
+}
 */
 import "C"
-import (
-	"runtime/cgo"
-	"unsafe"
-)
+import "runtime/cgo"
 
 type MeasureFunc func(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size
 
 //export goMeasureCallback
 func goMeasureCallback(node C.YGNodeConstRef, width C.float, widthMode C.YGMeasureMode, height C.float, heightMode C.YGMeasureMode) (result C.YGSize) {
-	ctx := C.YGNodeGetContext(C.YGNodeRef(node))
-	if ctx == nil {
+	ctx := C.tessGetNodeContext(C.YGNodeRef(node))
+	if ctx == 0 {
 		return C.YGSize{width: 0, height: 0}
 	}
 
@@ -36,7 +42,7 @@ func goMeasureCallback(node C.YGNodeConstRef, width C.float, widthMode C.YGMeasu
 		}
 	}()
 
-	handle := cgo.Handle(uintptr(ctx))
+	handle := cgo.Handle(ctx)
 	fn := handle.Value().(MeasureFunc)
 
 	goNode := &Node{node: C.YGNodeRef(node)}
@@ -51,7 +57,7 @@ func (n *Node) SetMeasureFunc(fn MeasureFunc) {
 	}
 
 	handle := cgo.NewHandle(fn)
-	C.YGNodeSetContext(n.node, unsafe.Pointer(handle))
+	C.tessSetNodeContext(n.node, C.uintptr_t(handle))
 	C.tessSetMeasureFunc(n.node)
 }
 
@@ -60,13 +66,12 @@ func (n *Node) HasMeasureFunc() bool {
 }
 
 func (n *Node) UnsetMeasureFunc() {
-	ctx := C.YGNodeGetContext(n.node)
-	if ctx != nil {
-		handle := cgo.Handle(uintptr(ctx))
-		// Set context to nil BEFORE deleting handle to prevent race condition
-		// where another goroutine sees non-nil context but handle is deleted
-		C.YGNodeSetContext(n.node, nil)
+	ctx := C.tessGetNodeContext(n.node)
+	if ctx != 0 {
+		handle := cgo.Handle(ctx)
+		C.tessSetNodeContext(n.node, 0)
 		handle.Delete()
 	}
+
 	C.tessUnsetMeasureFunc(n.node)
 }
