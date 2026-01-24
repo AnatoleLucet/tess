@@ -58,6 +58,32 @@ func (n *Node) CloneRecursive() *Node {
 	return clone
 }
 
+// Snapshot creates a deep clone of the node tree while preserving the dirty state.
+// Unlike CloneRecursive which marks cloned nodes as dirty, Snapshot maintains
+// the original dirty status, allowing cached layout computations to be reused.
+func (n *Node) Snapshot() *Node {
+	return n.snapshot(n.IsDirty())
+}
+
+func (n *Node) snapshot(parentWasDirty bool) *Node {
+	wasDirty := n.IsDirty()
+
+	clone := &Node{node: C.YGNodeClone(n.node)}
+	clone.RemoveAllChildren()
+
+	for i := 0; i < n.GetChildCount(); i++ {
+		child := n.GetChild(i)
+		clonedChild := child.snapshot(wasDirty)
+		clone.AddChild(clonedChild)
+	}
+
+	if !wasDirty && !parentWasDirty {
+		clone.SetDirty(false)
+	}
+
+	return clone
+}
+
 func (n *Node) Free() {
 	if n.node != nil {
 		C.YGNodeFree(n.node)

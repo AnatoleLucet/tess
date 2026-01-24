@@ -2,6 +2,7 @@ package tess
 
 /*
 #include <yoga/Yoga.h>
+#include "tess_ext.h"
 */
 import "C"
 import (
@@ -172,6 +173,11 @@ func (n *Node) IsDirty() bool {
 // style properties are changed.
 func (n *Node) MarkDirty() {
 	C.YGNodeMarkDirty(n.node)
+}
+
+// SetDirty directly sets the dirty flag on a node without propagating to parent.
+func (n *Node) SetDirty(dirty bool) {
+	C.YGNodeSetDirtyExt(n.node, C.bool(dirty))
 }
 
 type Container struct {
