@@ -93,6 +93,46 @@ func TestNodeClone(t *testing.T) {
 		original.Free()
 		clone.Free()
 	})
+
+	t.Run("clones node with measure func", func(t *testing.T) {
+		measureCalled := 0
+		measureFunc := func(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+			measureCalled++
+			return Size{Width: 50, Height: 20}
+		}
+
+		parent, err := NewNode()
+		assert.NoError(t, err)
+		parent.SetWidth(Point(200))
+		parent.SetHeight(Point(200))
+
+		original, err := NewNode()
+		assert.NoError(t, err)
+		original.SetMeasureFunc(measureFunc)
+		parent.AddChild(original)
+
+		clonedParent := parent.CloneRecursive()
+		clone := clonedParent.GetChild(0)
+		assert.NotNil(t, clone)
+		assert.True(t, clone.HasMeasureFunc(), "clone should have measure function")
+
+		clonedParent.ComputeLayout(Container{Width: 300, Height: 300})
+		assert.Equal(t, 1, measureCalled, "measure should be called once for clone")
+
+		parent.ComputeLayout(Container{Width: 300, Height: 300})
+		assert.Equal(t, 2, measureCalled, "measure should be called once for original")
+
+		original.UnsetMeasureFunc()
+		assert.False(t, original.HasMeasureFunc(), "original should not have measure function")
+		assert.True(t, clone.HasMeasureFunc(), "clone should still have measure function")
+
+		clone.MarkDirty()
+		clonedParent.ComputeLayout(Container{Width: 300, Height: 300})
+		assert.Equal(t, 3, measureCalled, "measure should be called again for clone")
+
+		parent.FreeRecursive()
+		clonedParent.FreeRecursive()
+	})
 }
 
 func TestNodeFree(t *testing.T) {

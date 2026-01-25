@@ -42,12 +42,26 @@ func NewNode(styles ...*Style) (*Node, error) {
 }
 
 func (n *Node) Clone() *Node {
-	return &Node{node: C.YGNodeClone(n.node)}
+	clone := &Node{node: C.YGNodeClone(n.node)}
+
+	if n.HasMeasureFunc() {
+		clone.reregisterMeasureFunc(n.getMeasureFunc())
+	} else {
+		clone.clearContext()
+	}
+
+	return clone
 }
 
 func (n *Node) CloneRecursive() *Node {
 	clone := &Node{node: C.YGNodeClone(n.node)}
 	clone.RemoveAllChildren()
+
+	if n.HasMeasureFunc() {
+		clone.reregisterMeasureFunc(n.getMeasureFunc())
+	} else {
+		clone.clearContext()
+	}
 
 	for i := 0; i < n.GetChildCount(); i++ {
 		child := n.GetChild(i)
@@ -70,6 +84,12 @@ func (n *Node) snapshot(parentWasDirty bool) *Node {
 
 	clone := &Node{node: C.YGNodeClone(n.node)}
 	clone.RemoveAllChildren()
+
+	if n.HasMeasureFunc() {
+		clone.reregisterMeasureFunc(n.getMeasureFunc())
+	} else {
+		clone.clearContext()
+	}
 
 	for i := 0; i < n.GetChildCount(); i++ {
 		child := n.GetChild(i)

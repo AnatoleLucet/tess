@@ -75,3 +75,35 @@ func (n *Node) UnsetMeasureFunc() {
 
 	C.tessUnsetMeasureFunc(n.node)
 }
+
+func (n *Node) getMeasureFunc() MeasureFunc {
+	ctx := C.tessGetNodeContext(n.node)
+	if ctx == 0 {
+		return nil
+	}
+
+	handle := cgo.Handle(ctx)
+	fn, ok := handle.Value().(MeasureFunc)
+	if !ok {
+		return nil
+	}
+
+	return fn
+}
+
+func (n *Node) reregisterMeasureFunc(fn MeasureFunc) {
+	n.clearContext()
+
+	if fn == nil {
+		C.tessUnsetMeasureFunc(n.node)
+		return
+	}
+
+	handle := cgo.NewHandle(fn)
+	C.tessSetNodeContext(n.node, C.uintptr_t(handle))
+	C.tessSetMeasureFunc(n.node)
+}
+
+func (n *Node) clearContext() {
+	C.tessSetNodeContext(n.node, 0)
+}
