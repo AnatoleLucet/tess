@@ -45,7 +45,8 @@ func goMeasureCallback(node C.YGNodeConstRef, width C.float, widthMode C.YGMeasu
 	handle := cgo.Handle(ctx)
 	fn := handle.Value().(MeasureFunc)
 
-	goNode := &Node{node: C.YGNodeRef(node)}
+	// todo: that's unoptimized. We create a new Node wrapper every time.
+	goNode := newNode(getDefaultConfig(), C.YGNodeRef(node))
 	size := fn(goNode, float32(width), fromYGMeasureMode(widthMode), float32(height), fromYGMeasureMode(heightMode))
 
 	return C.YGSize{width: C.float(size.Width), height: C.float(size.Height)}

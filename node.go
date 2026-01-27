@@ -36,12 +36,15 @@ type Node struct {
 
 	parent   *Node
 	children []*Node
+
+	layout *Layout
 }
 
 func NewNode(styles ...*Style) (*Node, error) {
 	config := getDefaultConfig()
+	ygnode := C.YGNodeNewWithConfig(config.config)
 
-	node := &Node{node: C.YGNodeNewWithConfig(config.config), config: config}
+	node := newNode(config, ygnode)
 	for _, style := range styles {
 		if err := node.Apply(style); err != nil {
 			return nil, err
@@ -51,11 +54,17 @@ func NewNode(styles ...*Style) (*Node, error) {
 	return node, nil
 }
 
+func newNode(config *Config, ygnode C.YGNodeRef) *Node {
+	node := &Node{node: ygnode, config: config}
+	node.layout = newLayout(node)
+	return node
+}
+
 func (n *Node) Clone() *Node {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
 
-	clone := &Node{node: C.YGNodeClone(n.node)}
+	clone := newNode(n.config, C.YGNodeClone(n.node))
 
 	if n.HasMeasureFunc() {
 		clone.reregisterMeasureFunc(n.getMeasureFunc())
@@ -70,7 +79,7 @@ func (n *Node) CloneRecursive() *Node {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
 
-	clone := &Node{node: C.YGNodeClone(n.node)}
+	clone := newNode(n.config, C.YGNodeClone(n.node))
 	clone.RemoveAllChildren()
 
 	if n.HasMeasureFunc() {
@@ -82,6 +91,7 @@ func (n *Node) CloneRecursive() *Node {
 	for i := 0; i < n.GetChildCount(); i++ {
 		child := n.GetChild(i)
 		clonedChild := child.CloneRecursive()
+		clonedChild.SetParent(clone)
 		clone.AppendChild(clonedChild)
 	}
 
@@ -101,7 +111,7 @@ func (n *Node) Snapshot() *Node {
 func (n *Node) snapshot(parentWasDirty bool) *Node {
 	wasDirty := n.IsDirty()
 
-	clone := &Node{node: C.YGNodeClone(n.node)}
+	clone := newNode(n.config, C.YGNodeClone(n.node))
 	clone.RemoveAllChildren()
 
 	if n.HasMeasureFunc() {
@@ -113,6 +123,7 @@ func (n *Node) snapshot(parentWasDirty bool) *Node {
 	for i := 0; i < n.GetChildCount(); i++ {
 		child := n.GetChild(i)
 		clonedChild := child.snapshot(wasDirty)
+		clonedChild.SetParent(clone)
 		clone.AppendChild(clonedChild)
 	}
 
@@ -124,12 +135,15 @@ func (n *Node) snapshot(parentWasDirty bool) *Node {
 }
 
 func (n *Node) Free() {
-	n.mu.Lock()
-	defer n.mu.Unlock()
-
 	if n.node != nil {
+		if n.HasMeasureFunc() {
+			n.UnsetMeasureFunc()
+		}
+
+		n.mu.Lock()
 		C.YGNodeFree(n.node)
 		n.node = nil
+		n.mu.Unlock()
 	}
 }
 
@@ -206,6 +220,8 @@ func (n *Node) Children() iter.Seq[*Node] {
 func (n *Node) AppendChild(child *Node) {
 	count := n.GetChildCount()
 
+	child.SetParent(n)
+
 	n.mu.Lock()
 	defer n.mu.Unlock()
 	C.YGNodeInsertChild(n.node, child.node, C.size_t(count))
@@ -223,17 +239,23 @@ func (n *Node) SetChildren(children []*Node) {
 	}
 
 	cChildren := make([]C.YGNodeRef, len(children))
+	n.children = n.children[:0]
 	for i, child := range children {
+		child.SetParent(n)
+
 		cChildren[i] = child.node
+		n.children = append(n.children, child)
 	}
 
 	C.YGNodeSetChildren(n.node, &cChildren[0], C.size_t(len(children)))
-	n.children = slices.Clone(children)
+
 }
 
 func (n *Node) InsertChild(child *Node, index int) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
+
+	child.SetParent(n)
 
 	C.YGNodeInsertChild(n.node, child.node, C.size_t(index))
 	n.children = slices.Insert(n.children, index, child)
@@ -243,8 +265,9 @@ func (n *Node) RemoveChild(child *Node) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
-	C.YGNodeRemoveChild(n.node, child.node)
+	child.SetParent(nil)
 
+	C.YGNodeRemoveChild(n.node, child.node)
 	for i, c := range n.children {
 		if c == child {
 			n.children = append(n.children[:i], n.children[i+1:]...)
@@ -257,6 +280,10 @@ func (n *Node) RemoveAllChildren() {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 
+	for _, child := range n.children {
+		child.SetParent(nil)
+	}
+
 	C.YGNodeRemoveAllChildren(n.node)
 	n.children = n.children[:0]
 }
@@ -265,11 +292,14 @@ func (n *Node) GetParent() *Node {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
 
-	parent := C.YGNodeGetParent(n.node)
-	if parent == nil {
-		return nil
-	}
-	return &Node{node: parent}
+	return n.parent
+}
+
+func (n *Node) SetParent(parent *Node) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
+	n.parent = parent
 }
 
 func (n *Node) SetConfig(config *Config) {

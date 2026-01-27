@@ -8,7 +8,6 @@ import "C"
 import (
 	"fmt"
 	"math"
-	"sync"
 )
 
 type layerEdgeType int
@@ -20,87 +19,100 @@ const (
 )
 
 type Layout struct {
-	mu   *sync.RWMutex
-	node C.YGNodeRef
+	self *Node
+
+	padding *LayoutEdges
+	margin  *LayoutEdges
+	border  *LayoutEdges
+}
+
+func newLayout(self *Node) *Layout {
+	layout := &Layout{self: self}
+
+	layout.padding = &LayoutEdges{typ: layerEdgePadding, self: self}
+	layout.margin = &LayoutEdges{typ: layerEdgeMargin, self: self}
+	layout.border = &LayoutEdges{typ: layerEdgeBorder, self: self}
+
+	return layout
 }
 
 func (l *Layout) Width() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetWidth(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetWidth(l.self.node))
 }
 func (l *Layout) Height() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetHeight(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetHeight(l.self.node))
 }
 func (l *Layout) RawWidth() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetRawWidth(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetRawWidth(l.self.node))
 }
 func (l *Layout) RawHeight() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetRawHeight(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetRawHeight(l.self.node))
 }
 
 func (l *Layout) Top() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetTop(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetTop(l.self.node))
 }
 func (l *Layout) Right() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetRight(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetRight(l.self.node))
 }
 func (l *Layout) Bottom() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetBottom(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetBottom(l.self.node))
 }
 func (l *Layout) Left() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return float32(C.YGNodeLayoutGetLeft(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetLeft(l.self.node))
 }
 
 func (l *Layout) Padding() *LayoutEdges {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return &LayoutEdges{l.mu, layerEdgePadding, l.node}
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return l.padding
 }
 func (l *Layout) Margin() *LayoutEdges {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return &LayoutEdges{l.mu, layerEdgeMargin, l.node}
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return l.margin
 }
 func (l *Layout) Border() *LayoutEdges {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return &LayoutEdges{l.mu, layerEdgeBorder, l.node}
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return l.border
 }
 
 func (l *Layout) Direction() DirectionType {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return fromYGDirection(C.YGNodeLayoutGetDirection(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return fromYGDirection(C.YGNodeLayoutGetDirection(l.self.node))
 }
 
 func (l *Layout) HadOverflow() bool {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	return bool(C.YGNodeLayoutGetHadOverflow(l.node))
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
+	return bool(C.YGNodeLayoutGetHadOverflow(l.self.node))
 }
 
 func (l *Layout) AbsoluteTop() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
 
 	var top float32
 
-	node := &Node{node: l.node}
+	node := l.self
 	for node != nil {
 		top += node.GetLayout().Top()
 		node = node.GetParent()
@@ -110,12 +122,12 @@ func (l *Layout) AbsoluteTop() float32 {
 }
 
 func (l *Layout) AbsoluteLeft() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
 
 	var left float32
 
-	node := &Node{node: l.node}
+	node := l.self
 	for node != nil {
 		left += node.GetLayout().Left()
 		node = node.GetParent()
@@ -125,12 +137,12 @@ func (l *Layout) AbsoluteLeft() float32 {
 }
 
 func (l *Layout) AbsoluteBottom() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
 
 	var bottom float32
 
-	node := &Node{node: l.node}
+	node := l.self
 	for node != nil {
 		bottom += node.GetLayout().Bottom()
 		node = node.GetParent()
@@ -140,12 +152,12 @@ func (l *Layout) AbsoluteBottom() float32 {
 }
 
 func (l *Layout) AbsoluteRight() float32 {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
+	l.self.mu.RLock()
+	defer l.self.mu.RUnlock()
 
 	var right float32
 
-	node := &Node{node: l.node}
+	node := l.self
 	for node != nil {
 		right += node.GetLayout().Right()
 		node = node.GetParent()
@@ -155,71 +167,69 @@ func (l *Layout) AbsoluteRight() float32 {
 }
 
 type LayoutEdges struct {
-	mu *sync.RWMutex
-
 	typ  layerEdgeType
-	node C.YGNodeRef
+	self *Node
 }
 
 func (e *LayoutEdges) Top() float32 {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.self.mu.RLock()
+	defer e.self.mu.RUnlock()
 
 	switch e.typ {
 	case layerEdgePadding:
-		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeTop))
+		return float32(C.YGNodeLayoutGetPadding(e.self.node, C.YGEdgeTop))
 	case layerEdgeMargin:
-		return float32(C.YGNodeLayoutGetMargin(e.node, C.YGEdgeTop))
+		return float32(C.YGNodeLayoutGetMargin(e.self.node, C.YGEdgeTop))
 	case layerEdgeBorder:
-		return float32(C.YGNodeLayoutGetBorder(e.node, C.YGEdgeTop))
+		return float32(C.YGNodeLayoutGetBorder(e.self.node, C.YGEdgeTop))
 	}
 
 	return 0
 }
 
 func (e *LayoutEdges) Right() float32 {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.self.mu.RLock()
+	defer e.self.mu.RUnlock()
 
 	switch e.typ {
 	case layerEdgePadding:
-		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeRight))
+		return float32(C.YGNodeLayoutGetPadding(e.self.node, C.YGEdgeRight))
 	case layerEdgeMargin:
-		return float32(C.YGNodeLayoutGetMargin(e.node, C.YGEdgeRight))
+		return float32(C.YGNodeLayoutGetMargin(e.self.node, C.YGEdgeRight))
 	case layerEdgeBorder:
-		return float32(C.YGNodeLayoutGetBorder(e.node, C.YGEdgeRight))
+		return float32(C.YGNodeLayoutGetBorder(e.self.node, C.YGEdgeRight))
 	}
 
 	return 0
 }
 
 func (e *LayoutEdges) Bottom() float32 {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.self.mu.RLock()
+	defer e.self.mu.RUnlock()
 
 	switch e.typ {
 	case layerEdgePadding:
-		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeBottom))
+		return float32(C.YGNodeLayoutGetPadding(e.self.node, C.YGEdgeBottom))
 	case layerEdgeMargin:
-		return float32(C.YGNodeLayoutGetMargin(e.node, C.YGEdgeBottom))
+		return float32(C.YGNodeLayoutGetMargin(e.self.node, C.YGEdgeBottom))
 	case layerEdgeBorder:
-		return float32(C.YGNodeLayoutGetBorder(e.node, C.YGEdgeBottom))
+		return float32(C.YGNodeLayoutGetBorder(e.self.node, C.YGEdgeBottom))
 	}
 
 	return 0
 }
 
 func (e *LayoutEdges) Left() float32 {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.self.mu.RLock()
+	defer e.self.mu.RUnlock()
 
 	switch e.typ {
 	case layerEdgePadding:
-		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeLeft))
+		return float32(C.YGNodeLayoutGetPadding(e.self.node, C.YGEdgeLeft))
 	case layerEdgeMargin:
-		return float32(C.YGNodeLayoutGetMargin(e.node, C.YGEdgeLeft))
+		return float32(C.YGNodeLayoutGetMargin(e.self.node, C.YGEdgeLeft))
 	case layerEdgeBorder:
-		return float32(C.YGNodeLayoutGetBorder(e.node, C.YGEdgeLeft))
+		return float32(C.YGNodeLayoutGetBorder(e.self.node, C.YGEdgeLeft))
 	}
 
 	return 0
@@ -228,8 +238,7 @@ func (e *LayoutEdges) Left() float32 {
 func (n *Node) GetLayout() *Layout {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
-
-	return &Layout{mu: &n.mu, node: n.node}
+	return n.layout
 }
 
 func (n *Node) HasNewLayout() bool {
