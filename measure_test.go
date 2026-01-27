@@ -61,7 +61,7 @@ func TestSetMeasureFunc(t *testing.T) {
 			return Size{Width: 50, Height: 25}
 		})
 
-		parent.AddChild(child)
+		parent.AppendChild(child)
 		err = parent.ComputeLayout(Container{})
 		assert.NoError(t, err)
 

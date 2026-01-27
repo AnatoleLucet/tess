@@ -4,6 +4,7 @@ package tess
 #include <yoga/Yoga.h>
 */
 import "C"
+import "sync"
 
 type Style struct {
 	// Display & Layout
@@ -45,6 +46,9 @@ type Style struct {
 }
 
 func (n *Node) SetDisplay(display DisplayType) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygDisplay, err := toYGDisplay(display)
 	if err != nil {
 		return err
@@ -54,6 +58,9 @@ func (n *Node) SetDisplay(display DisplayType) error {
 }
 
 func (n *Node) SetFlexDirection(direction FlexDirection) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygDirection, err := toYGFlexDirection(direction)
 	if err != nil {
 		return err
@@ -63,6 +70,9 @@ func (n *Node) SetFlexDirection(direction FlexDirection) error {
 }
 
 func (n *Node) SetJustifyContent(justify FlexJustify) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygJustify, err := toYGJustify(justify)
 	if err != nil {
 		return err
@@ -72,6 +82,9 @@ func (n *Node) SetJustifyContent(justify FlexJustify) error {
 }
 
 func (n *Node) SetAlignItems(align FlexAlign) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygAlign, err := toYGAlign(align)
 	if err != nil {
 		return err
@@ -81,6 +94,9 @@ func (n *Node) SetAlignItems(align FlexAlign) error {
 }
 
 func (n *Node) SetAlignSelf(align FlexAlign) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygAlign, err := toYGAlign(align)
 	if err != nil {
 		return err
@@ -90,6 +106,9 @@ func (n *Node) SetAlignSelf(align FlexAlign) error {
 }
 
 func (n *Node) SetAlignContent(align FlexAlign) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygAlign, err := toYGAlign(align)
 	if err != nil {
 		return err
@@ -99,6 +118,9 @@ func (n *Node) SetAlignContent(align FlexAlign) error {
 }
 
 func (n *Node) SetFlexWrap(wrap FlexWrap) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygWrap, err := toYGWrap(wrap)
 	if err != nil {
 		return err
@@ -108,6 +130,9 @@ func (n *Node) SetFlexWrap(wrap FlexWrap) error {
 }
 
 func (n *Node) SetDirection(direction DirectionType) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygDirection, err := toYGDirection(direction)
 	if err != nil {
 		return err
@@ -117,6 +142,9 @@ func (n *Node) SetDirection(direction DirectionType) error {
 }
 
 func (n *Node) SetWidth(width Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch width.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetWidth(n.node, C.float(width.value))
@@ -135,6 +163,9 @@ func (n *Node) SetWidth(width Value) error {
 }
 
 func (n *Node) SetHeight(height Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch height.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetHeight(n.node, C.float(height.value))
@@ -153,6 +184,9 @@ func (n *Node) SetHeight(height Value) error {
 }
 
 func (n *Node) SetMinWidth(minWidth Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch minWidth.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMinWidth(n.node, C.float(minWidth.value))
@@ -169,6 +203,9 @@ func (n *Node) SetMinWidth(minWidth Value) error {
 }
 
 func (n *Node) SetMinHeight(minHeight Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch minHeight.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMinHeight(n.node, C.float(minHeight.value))
@@ -185,6 +222,9 @@ func (n *Node) SetMinHeight(minHeight Value) error {
 }
 
 func (n *Node) SetMaxWidth(maxWidth Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch maxWidth.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMaxWidth(n.node, C.float(maxWidth.value))
@@ -201,6 +241,9 @@ func (n *Node) SetMaxWidth(maxWidth Value) error {
 }
 
 func (n *Node) SetMaxHeight(maxHeight Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch maxHeight.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetMaxHeight(n.node, C.float(maxHeight.value))
@@ -217,21 +260,33 @@ func (n *Node) SetMaxHeight(maxHeight Value) error {
 }
 
 func (n *Node) SetAspectRatio(aspectRatio float32) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	C.YGNodeStyleSetAspectRatio(n.node, C.float(aspectRatio))
 	return nil
 }
 
 func (n *Node) SetFlexGrow(flexGrow float32) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	C.YGNodeStyleSetFlexGrow(n.node, C.float(flexGrow))
 	return nil
 }
 
 func (n *Node) SetFlexShrink(flexShrink float32) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	C.YGNodeStyleSetFlexShrink(n.node, C.float(flexShrink))
 	return nil
 }
 
 func (n *Node) SetFlexBasis(flexBasis Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch flexBasis.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetFlexBasis(n.node, C.float(flexBasis.value))
@@ -250,6 +305,9 @@ func (n *Node) SetFlexBasis(flexBasis Value) error {
 }
 
 func (n *Node) SetPosition(position PositionType) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygPosition, err := toYGPositionType(position)
 	if err != nil {
 		return err
@@ -259,6 +317,9 @@ func (n *Node) SetPosition(position PositionType) error {
 }
 
 func (n *Node) SetTop(top Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch top.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeTop, C.float(top.value))
@@ -271,6 +332,9 @@ func (n *Node) SetTop(top Value) error {
 }
 
 func (n *Node) SetRight(right Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch right.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeRight, C.float(right.value))
@@ -283,6 +347,9 @@ func (n *Node) SetRight(right Value) error {
 }
 
 func (n *Node) SetBottom(bottom Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch bottom.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeBottom, C.float(bottom.value))
@@ -295,6 +362,9 @@ func (n *Node) SetBottom(bottom Value) error {
 }
 
 func (n *Node) SetLeft(left Value) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	switch left.unit {
 	case UnitPoint:
 		C.YGNodeStyleSetPosition(n.node, C.YGEdgeLeft, C.float(left.value))
@@ -307,6 +377,9 @@ func (n *Node) SetLeft(left Value) error {
 }
 
 func (n *Node) SetOverflow(overflow OverflowType) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygOverflow, err := toYGOverflow(overflow)
 	if err != nil {
 		return err
@@ -316,6 +389,9 @@ func (n *Node) SetOverflow(overflow OverflowType) error {
 }
 
 func (n *Node) SetBoxSizing(boxSizing BoxSizingType) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ygBoxSizing, err := toYGBoxSizing(boxSizing)
 	if err != nil {
 		return err
@@ -327,6 +403,9 @@ func (n *Node) SetBoxSizing(boxSizing BoxSizingType) error {
 // SetPadding sets the padding for the node.
 // Note: Padding can only be set in points or percent.
 func (n *Node) SetPadding(edges Edges) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	setPaddingEdge := func(edge C.YGEdge, value Value) {
 		switch value.unit {
 		case UnitPoint:
@@ -379,6 +458,9 @@ func (n *Node) SetPadding(edges Edges) error {
 // SetMargin sets the margin widths for the node.
 // Note: Margins can be set in points, percent, or auto.
 func (n *Node) SetMargin(edges Edges) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	setMarginEdge := func(edge C.YGEdge, value Value) {
 		switch value.unit {
 		case UnitPoint:
@@ -433,6 +515,9 @@ func (n *Node) SetMargin(edges Edges) error {
 // SetBorder sets the border widths for the node.
 // Note: Borders can only be set in points.
 func (n *Node) SetBorder(edges Edges) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	setBorderEdge := func(edge C.YGEdge, value Value) {
 		if value.unit == UnitPoint {
 			C.YGNodeStyleSetBorder(n.node, edge, C.float(value.value))
@@ -482,6 +567,9 @@ func (n *Node) SetBorder(edges Edges) error {
 // SetGap sets the gap sizes for the node.
 // Note: Gaps can be set in points or percent.
 func (n *Node) SetGap(gap Gap) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	setGapGutter := func(gutter C.YGGutter, value Value) {
 		switch value.unit {
 		case UnitPoint:
@@ -505,119 +593,177 @@ func (n *Node) SetGap(gap Gap) error {
 }
 
 func (n *Node) GetDisplay() DisplayType {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGDisplay(C.YGNodeStyleGetDisplay(n.node))
 }
 
 func (n *Node) GetFlexDirection() FlexDirection {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGFlexDirection(C.YGNodeStyleGetFlexDirection(n.node))
 }
 
 func (n *Node) GetJustifyContent() FlexJustify {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGJustify(C.YGNodeStyleGetJustifyContent(n.node))
 }
 
 func (n *Node) GetAlignItems() FlexAlign {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGAlign(C.YGNodeStyleGetAlignItems(n.node))
 }
 
 func (n *Node) GetAlignSelf() FlexAlign {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGAlign(C.YGNodeStyleGetAlignSelf(n.node))
 }
 
 func (n *Node) GetAlignContent() FlexAlign {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGAlign(C.YGNodeStyleGetAlignContent(n.node))
 }
 
 func (n *Node) GetFlexWrap() FlexWrap {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGWrap(C.YGNodeStyleGetFlexWrap(n.node))
 }
 
 func (n *Node) GetDirection() DirectionType {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGDirection(C.YGNodeStyleGetDirection(n.node))
 }
 
 func (n *Node) GetWidth() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetWidth(n.node))
 }
 
 func (n *Node) GetHeight() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetHeight(n.node))
 }
 
 func (n *Node) GetMinWidth() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetMinWidth(n.node))
 }
 
 func (n *Node) GetMinHeight() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetMinHeight(n.node))
 }
 
 func (n *Node) GetMaxWidth() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetMaxWidth(n.node))
 }
 
 func (n *Node) GetMaxHeight() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetMaxHeight(n.node))
 }
 
 func (n *Node) GetAspectRatio() float32 {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return float32(C.YGNodeStyleGetAspectRatio(n.node))
 }
 
 func (n *Node) GetFlexGrow() float32 {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return float32(C.YGNodeStyleGetFlexGrow(n.node))
 }
 
 func (n *Node) GetFlexShrink() float32 {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return float32(C.YGNodeStyleGetFlexShrink(n.node))
 }
 
 func (n *Node) GetFlexBasis() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetFlexBasis(n.node))
 }
 
 func (n *Node) GetPosition() PositionType {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGPositionType(C.YGNodeStyleGetPositionType(n.node))
 }
 
 func (n *Node) GetTop() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeTop))
 }
 
 func (n *Node) GetRight() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeRight))
 }
 
 func (n *Node) GetBottom() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeBottom))
 }
 
 func (n *Node) GetLeft() Value {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetPosition(n.node, C.YGEdgeLeft))
 }
 
 func (n *Node) GetOverflow() OverflowType {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGOverflow(C.YGNodeStyleGetOverflow(n.node))
 }
 
 func (n *Node) GetBoxSizing() BoxSizingType {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
 	return fromYGBoxSizing(C.YGNodeStyleGetBoxSizing(n.node))
 }
 
 func (n *Node) GetPadding() *StyleEdges {
-	return &StyleEdges{styleEdgePadding, n.node}
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+	return &StyleEdges{&n.mu, styleEdgePadding, n.node}
 }
 
 func (n *Node) GetMargin() *StyleEdges {
-	return &StyleEdges{styleEdgeMargin, n.node}
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+	return &StyleEdges{&n.mu, styleEdgeMargin, n.node}
 }
 
 func (n *Node) GetBorder() *StyleEdges {
-	return &StyleEdges{styleEdgeBorder, n.node}
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+	return &StyleEdges{&n.mu, styleEdgeBorder, n.node}
 }
 
 func (n *Node) GetGap() *StyleGap {
-	return &StyleGap{n.node}
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+	return &StyleGap{&n.mu, n.node}
 }
 
 // Apply applies a Style to the node
@@ -743,18 +889,26 @@ func (n *Node) Apply(style *Style) error {
 }
 
 type StyleGap struct {
+	mu *sync.RWMutex
+
 	node C.YGNodeRef
 }
 
 func (g *StyleGap) GetRow() Value {
+	g.mu.RLock()
+	defer g.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetGap(g.node, C.YGGutterRow))
 }
 
 func (g *StyleGap) GetColumn() Value {
+	g.mu.RLock()
+	defer g.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetGap(g.node, C.YGGutterColumn))
 }
 
 func (g *StyleGap) GetAll() Value {
+	g.mu.RLock()
+	defer g.mu.RUnlock()
 	return fromYGValue(C.YGNodeStyleGetGap(g.node, C.YGGutterAll))
 }
 
@@ -767,11 +921,16 @@ const (
 )
 
 type StyleEdges struct {
+	mu *sync.RWMutex
+
 	typ  styleEdgeType
 	node C.YGNodeRef
 }
 
 func (e *StyleEdges) GetTop() Value {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case styleEdgePadding:
 		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeTop))
@@ -785,6 +944,9 @@ func (e *StyleEdges) GetTop() Value {
 }
 
 func (e *StyleEdges) GetRight() Value {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case styleEdgePadding:
 		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeRight))
@@ -798,6 +960,9 @@ func (e *StyleEdges) GetRight() Value {
 }
 
 func (e *StyleEdges) GetBottom() Value {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case styleEdgePadding:
 		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeBottom))
@@ -811,6 +976,9 @@ func (e *StyleEdges) GetBottom() Value {
 }
 
 func (e *StyleEdges) GetLeft() Value {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case styleEdgePadding:
 		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeLeft))
@@ -824,6 +992,9 @@ func (e *StyleEdges) GetLeft() Value {
 }
 
 func (e *StyleEdges) GetStart() Value {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case styleEdgePadding:
 		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeStart))
@@ -837,6 +1008,9 @@ func (e *StyleEdges) GetStart() Value {
 }
 
 func (e *StyleEdges) GetEnd() Value {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case styleEdgePadding:
 		return fromYGValue(C.YGNodeStyleGetPadding(e.node, C.YGEdgeEnd))

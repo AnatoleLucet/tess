@@ -8,6 +8,7 @@ import "C"
 import (
 	"fmt"
 	"math"
+	"sync"
 )
 
 type layerEdgeType int
@@ -19,32 +20,84 @@ const (
 )
 
 type Layout struct {
+	mu   *sync.RWMutex
 	node C.YGNodeRef
 }
 
-func (l *Layout) Width() float32     { return float32(C.YGNodeLayoutGetWidth(l.node)) }
-func (l *Layout) Height() float32    { return float32(C.YGNodeLayoutGetHeight(l.node)) }
-func (l *Layout) RawWidth() float32  { return float32(C.YGNodeLayoutGetRawWidth(l.node)) }
-func (l *Layout) RawHeight() float32 { return float32(C.YGNodeLayoutGetRawHeight(l.node)) }
+func (l *Layout) Width() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetWidth(l.node))
+}
+func (l *Layout) Height() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetHeight(l.node))
+}
+func (l *Layout) RawWidth() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetRawWidth(l.node))
+}
+func (l *Layout) RawHeight() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetRawHeight(l.node))
+}
 
-func (l *Layout) Top() float32    { return float32(C.YGNodeLayoutGetTop(l.node)) }
-func (l *Layout) Right() float32  { return float32(C.YGNodeLayoutGetRight(l.node)) }
-func (l *Layout) Bottom() float32 { return float32(C.YGNodeLayoutGetBottom(l.node)) }
-func (l *Layout) Left() float32   { return float32(C.YGNodeLayoutGetLeft(l.node)) }
+func (l *Layout) Top() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetTop(l.node))
+}
+func (l *Layout) Right() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetRight(l.node))
+}
+func (l *Layout) Bottom() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetBottom(l.node))
+}
+func (l *Layout) Left() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return float32(C.YGNodeLayoutGetLeft(l.node))
+}
 
-func (l *Layout) Padding() *LayoutEdges { return &LayoutEdges{layerEdgePadding, l.node} }
-func (l *Layout) Margin() *LayoutEdges  { return &LayoutEdges{layerEdgeMargin, l.node} }
-func (l *Layout) Border() *LayoutEdges  { return &LayoutEdges{layerEdgeBorder, l.node} }
+func (l *Layout) Padding() *LayoutEdges {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return &LayoutEdges{l.mu, layerEdgePadding, l.node}
+}
+func (l *Layout) Margin() *LayoutEdges {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return &LayoutEdges{l.mu, layerEdgeMargin, l.node}
+}
+func (l *Layout) Border() *LayoutEdges {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	return &LayoutEdges{l.mu, layerEdgeBorder, l.node}
+}
 
 func (l *Layout) Direction() DirectionType {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	return fromYGDirection(C.YGNodeLayoutGetDirection(l.node))
 }
 
 func (l *Layout) HadOverflow() bool {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	return bool(C.YGNodeLayoutGetHadOverflow(l.node))
 }
 
 func (l *Layout) AbsoluteTop() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+
 	var top float32
 
 	node := &Node{node: l.node}
@@ -57,6 +110,9 @@ func (l *Layout) AbsoluteTop() float32 {
 }
 
 func (l *Layout) AbsoluteLeft() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+
 	var left float32
 
 	node := &Node{node: l.node}
@@ -69,6 +125,9 @@ func (l *Layout) AbsoluteLeft() float32 {
 }
 
 func (l *Layout) AbsoluteBottom() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+
 	var bottom float32
 
 	node := &Node{node: l.node}
@@ -81,6 +140,9 @@ func (l *Layout) AbsoluteBottom() float32 {
 }
 
 func (l *Layout) AbsoluteRight() float32 {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+
 	var right float32
 
 	node := &Node{node: l.node}
@@ -93,11 +155,16 @@ func (l *Layout) AbsoluteRight() float32 {
 }
 
 type LayoutEdges struct {
+	mu *sync.RWMutex
+
 	typ  layerEdgeType
 	node C.YGNodeRef
 }
 
 func (e *LayoutEdges) Top() float32 {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case layerEdgePadding:
 		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeTop))
@@ -111,6 +178,9 @@ func (e *LayoutEdges) Top() float32 {
 }
 
 func (e *LayoutEdges) Right() float32 {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case layerEdgePadding:
 		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeRight))
@@ -124,6 +194,9 @@ func (e *LayoutEdges) Right() float32 {
 }
 
 func (e *LayoutEdges) Bottom() float32 {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case layerEdgePadding:
 		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeBottom))
@@ -137,6 +210,9 @@ func (e *LayoutEdges) Bottom() float32 {
 }
 
 func (e *LayoutEdges) Left() float32 {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	switch e.typ {
 	case layerEdgePadding:
 		return float32(C.YGNodeLayoutGetPadding(e.node, C.YGEdgeLeft))
@@ -150,18 +226,30 @@ func (e *LayoutEdges) Left() float32 {
 }
 
 func (n *Node) GetLayout() *Layout {
-	return &Layout{node: n.node}
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+
+	return &Layout{mu: &n.mu, node: n.node}
 }
 
 func (n *Node) HasNewLayout() bool {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+
 	return bool(C.YGNodeGetHasNewLayout(n.node))
 }
 
 func (n *Node) SetHasNewLayout(hasNewLayout bool) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	C.YGNodeSetHasNewLayout(n.node, C.bool(hasNewLayout))
 }
 
 func (n *Node) IsDirty() bool {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+
 	return bool(C.YGNodeIsDirty(n.node))
 }
 
@@ -172,11 +260,17 @@ func (n *Node) IsDirty() bool {
 // Nodes without a measure function are marked dirty automatically when their
 // style properties are changed.
 func (n *Node) MarkDirty() {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	C.YGNodeMarkDirty(n.node)
 }
 
 // SetDirty directly sets the dirty flag on a node without propagating to parent.
 func (n *Node) SetDirty(dirty bool) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	C.YGNodeSetDirtyExt(n.node, C.bool(dirty))
 }
 
@@ -187,6 +281,13 @@ type Container struct {
 }
 
 func (n *Node) ComputeLayout(container Container) error {
+	n.lockChildren()
+	n.mu.Lock()
+	defer func() {
+		n.mu.Unlock()
+		n.unlockChildren()
+	}()
+
 	w := C.float(container.Width)
 	h := C.float(container.Height)
 	if container.Width == 0 || math.IsNaN(float64(container.Width)) {
@@ -203,4 +304,18 @@ func (n *Node) ComputeLayout(container Container) error {
 
 	C.YGNodeCalculateLayout(n.node, w, h, d)
 	return nil
+}
+
+func (n *Node) lockChildren() {
+	for child := range n.Children() {
+		child.lockChildren()
+		child.mu.Lock()
+	}
+}
+
+func (n *Node) unlockChildren() {
+	for child := range n.Children() {
+		child.mu.Unlock()
+		child.unlockChildren()
+	}
 }

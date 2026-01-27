@@ -49,7 +49,7 @@ func TestNodeClone(t *testing.T) {
 
 		originalChild, err := NewNode()
 		assert.NoError(t, err)
-		original.AddChild(originalChild)
+		original.AppendChild(originalChild)
 
 		clone := original.CloneRecursive()
 		assert.NotNil(t, clone)
@@ -71,11 +71,11 @@ func TestNodeClone(t *testing.T) {
 
 		parentChild, err := NewNode()
 		assert.NoError(t, err)
-		original.AddChild(parentChild)
+		original.AppendChild(parentChild)
 
 		nestedChild, err := NewNode()
 		assert.NoError(t, err)
-		parentChild.AddChild(nestedChild)
+		parentChild.AppendChild(nestedChild)
 
 		clone := original.CloneRecursive()
 		assert.NotNil(t, clone)
@@ -109,7 +109,7 @@ func TestNodeClone(t *testing.T) {
 		original, err := NewNode()
 		assert.NoError(t, err)
 		original.SetMeasureFunc(measureFunc)
-		parent.AddChild(original)
+		parent.AppendChild(original)
 
 		clonedParent := parent.CloneRecursive()
 		clone := clonedParent.GetChild(0)
@@ -152,8 +152,8 @@ func TestNodeFreeRecursive(t *testing.T) {
 		child2, err := NewNode()
 		assert.NoError(t, err)
 
-		parent.AddChild(child1)
-		parent.AddChild(child2)
+		parent.AppendChild(child1)
+		parent.AppendChild(child2)
 
 		parent.FreeRecursive()
 		// Calling FreeRecursive again should not panic
@@ -199,7 +199,7 @@ func TestNodeChildren(t *testing.T) {
 
 		child, err := NewNode()
 		assert.NoError(t, err)
-		parent.AddChild(child)
+		parent.AppendChild(child)
 		assert.Equal(t, 1, parent.GetChildCount())
 
 		parent.FreeRecursive()
@@ -210,7 +210,7 @@ func TestNodeChildren(t *testing.T) {
 		child, err := NewNode()
 		assert.NoError(t, err)
 
-		parent.AddChild(child)
+		parent.AppendChild(child)
 		assert.Equal(t, 1, parent.GetChildCount())
 
 		parent.FreeRecursive()
@@ -225,8 +225,8 @@ func TestNodeChildren(t *testing.T) {
 		child1.SetWidth(Point(100))
 		child2.SetWidth(Point(200))
 
-		parent.AddChild(child1)
-		parent.AddChild(child2)
+		parent.AppendChild(child1)
+		parent.AppendChild(child2)
 
 		retrievedChild1 := parent.GetChild(0)
 		retrievedChild2 := parent.GetChild(1)
@@ -263,7 +263,7 @@ func TestNodeChildren(t *testing.T) {
 		parent, err := NewNode()
 		child, err := NewNode()
 		assert.NoError(t, err)
-		parent.AddChild(child)
+		parent.AppendChild(child)
 
 		assert.Equal(t, 1, parent.GetChildCount())
 
@@ -284,8 +284,8 @@ func TestNodeChildren(t *testing.T) {
 		child2.SetWidth(Point(200))
 		child3.SetWidth(Point(300))
 
-		parent.AddChild(child1)
-		parent.AddChild(child3)
+		parent.AppendChild(child1)
+		parent.AppendChild(child3)
 		parent.InsertChild(child2, 1)
 
 		assert.Equal(t, 3, parent.GetChildCount())
@@ -296,32 +296,14 @@ func TestNodeChildren(t *testing.T) {
 		parent.FreeRecursive()
 	})
 
-	t.Run("swaps child at index", func(t *testing.T) {
-		parent, err := NewNode()
-		child1, err := NewNode()
-		child2, err := NewNode()
-		assert.NoError(t, err)
-
-		child1.SetWidth(Point(100))
-		child2.SetWidth(Point(200))
-
-		parent.AddChild(child1)
-		parent.SwapChild(child2, 0)
-
-		assert.Equal(t, 1, parent.GetChildCount())
-		assert.Equal(t, Point(200), parent.GetChild(0).GetWidth())
-
-		parent.FreeRecursive()
-	})
-
 	t.Run("removes child", func(t *testing.T) {
 		parent, err := NewNode()
 		child1, err := NewNode()
 		child2, err := NewNode()
 		assert.NoError(t, err)
 
-		parent.AddChild(child1)
-		parent.AddChild(child2)
+		parent.AppendChild(child1)
+		parent.AppendChild(child2)
 		assert.Equal(t, 2, parent.GetChildCount())
 
 		parent.RemoveChild(child1)
@@ -337,8 +319,8 @@ func TestNodeChildren(t *testing.T) {
 		child2, err := NewNode()
 		assert.NoError(t, err)
 
-		parent.AddChild(child1)
-		parent.AddChild(child2)
+		parent.AppendChild(child1)
+		parent.AppendChild(child2)
 		assert.Equal(t, 2, parent.GetChildCount())
 
 		parent.RemoveAllChildren()
@@ -358,7 +340,7 @@ func TestNodeParent(t *testing.T) {
 
 		assert.Nil(t, child.GetParent())
 
-		parent.AddChild(child)
+		parent.AppendChild(child)
 		retrievedParent := child.GetParent()
 		assert.NotNil(t, retrievedParent)
 

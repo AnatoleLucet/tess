@@ -48,9 +48,9 @@ func main() {
 	defer child3.Free()
 
 	// Add children to root
-	root.AddChild(child1)
-	root.AddChild(child2)
-	root.AddChild(child3)
+	root.AppendChild(child1)
+	root.AppendChild(child2)
+	root.AppendChild(child3)
 
 	// Calculate layout
 	_ = root.ComputeLayout(tess.Container{Direction: tess.LTR})

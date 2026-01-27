@@ -13,7 +13,7 @@ root.SetPadding(tess.Edges{All: tess.Point(20)})
 child, err := tess.NewNode()
 child.SetWidth(tess.Percent(100))
 child.SetHeight(tess.Point(150))
-root.AddChild(child)
+root.AppendChild(child)
 
 // Compute the layout to get final positions and sizes
 root.ComputeLayout(tess.Container{})
@@ -74,7 +74,7 @@ func main() {
   child, err := tess.NewNode()
   child.SetWidth(tess.Point(200))
   child.SetHeight(tess.Point(200))
-  root.AddChild(child)
+  root.AppendChild(child)
 
   root.ComputeLayout(tess.Container{})
 

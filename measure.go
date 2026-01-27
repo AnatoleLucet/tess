@@ -56,16 +56,25 @@ func (n *Node) SetMeasureFunc(fn MeasureFunc) {
 		n.UnsetMeasureFunc()
 	}
 
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	handle := cgo.NewHandle(fn)
 	C.tessSetNodeContext(n.node, C.uintptr_t(handle))
 	C.tessSetMeasureFunc(n.node)
 }
 
 func (n *Node) HasMeasureFunc() bool {
+	n.mu.RLock()
+	defer n.mu.RUnlock()
+
 	return bool(C.YGNodeHasMeasureFunc(n.node))
 }
 
 func (n *Node) UnsetMeasureFunc() {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
 	ctx := C.tessGetNodeContext(n.node)
 	if ctx != 0 {
 		handle := cgo.Handle(ctx)
