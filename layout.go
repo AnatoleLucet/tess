@@ -290,12 +290,8 @@ type Container struct {
 }
 
 func (n *Node) ComputeLayout(container Container) error {
-	n.lockChildren()
-	n.mu.Lock()
-	defer func() {
-		n.mu.Unlock()
-		n.unlockChildren()
-	}()
+	n.lockTree()
+	defer n.unlockTree()
 
 	w := C.float(container.Width)
 	h := C.float(container.Height)
@@ -315,16 +311,16 @@ func (n *Node) ComputeLayout(container Container) error {
 	return nil
 }
 
-func (n *Node) lockChildren() {
-	for child := range n.Children() {
-		child.lockChildren()
-		child.mu.Lock()
+func (n *Node) lockTree() {
+	n.mu.Lock()
+	for _, child := range n.children {
+		child.lockTree()
 	}
 }
 
-func (n *Node) unlockChildren() {
-	for child := range n.Children() {
-		child.mu.Unlock()
-		child.unlockChildren()
+func (n *Node) unlockTree() {
+	for _, child := range n.children {
+		child.unlockTree()
 	}
+	n.mu.Unlock()
 }
