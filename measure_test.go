@@ -94,6 +94,28 @@ func TestSetMeasureFunc(t *testing.T) {
 
 		node.Free()
 	})
+
+	t.Run("can read node values inside measure function", func(t *testing.T) {
+		node, err := NewNode()
+		assert.NoError(t, err)
+
+		node.SetPadding(Edges{All: Point(10)})
+		var padding *StyleEdges
+
+		node.SetMeasureFunc(func(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+			padding = node.GetPadding()
+			return Size{Width: 100, Height: 50}
+		})
+
+		err = node.ComputeLayout(Container{})
+		assert.NoError(t, err)
+
+		assert.Equal(t, Point(10), padding.GetTop())
+		assert.Equal(t, Point(10), padding.GetBottom())
+		assert.Equal(t, Point(10), padding.GetLeft())
+		assert.Equal(t, Point(10), padding.GetRight())
+		node.Free()
+	})
 }
 
 func TestUnsetMeasureFunc(t *testing.T) {

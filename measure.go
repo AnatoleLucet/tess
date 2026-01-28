@@ -40,7 +40,10 @@ func goMeasureCallback(node C.YGNodeConstRef, width C.float, widthMode C.YGMeasu
 	}
 
 	ctx := cgo.Handle(ctxPtr).Value().(*measureContext)
+
+	ctx.node.mu.Unlock()
 	size := ctx.fn(ctx.node, float32(width), fromYGMeasureMode(widthMode), float32(height), fromYGMeasureMode(heightMode))
+	ctx.node.mu.Lock()
 
 	return C.YGSize{width: C.float(size.Width), height: C.float(size.Height)}
 }
