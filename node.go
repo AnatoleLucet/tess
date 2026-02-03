@@ -51,6 +51,7 @@ func NewNode(styles ...*Style) (*Node, error) {
 		}
 	}
 
+	node.SetPosition(Static)
 	return node, nil
 }
 
