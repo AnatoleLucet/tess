@@ -40,6 +40,16 @@ build_yoga() {
       -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
       -DCMAKE_C_COMPILER=gcc \
       -DCMAKE_CXX_COMPILER=g++
+  elif [[ "$PLATFORM" == "darwin_amd64" ]]; then
+    cmake -S "$YOGA_DIR" -B "$BUILD_DIR" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+      -DCMAKE_OSX_ARCHITECTURES=x86_64
+  elif [[ "$PLATFORM" == "darwin_arm64" ]]; then
+    cmake -S "$YOGA_DIR" -B "$BUILD_DIR" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+      -DCMAKE_OSX_ARCHITECTURES=arm64
   else
     cmake -S "$YOGA_DIR" -B "$BUILD_DIR" \
       -DCMAKE_BUILD_TYPE=Release \

@@ -1,6 +1,6 @@
 <h1 align="center"><code>tess</code></h1>
 
-<p align="center">A layout engine in Go powered by <a href="https://yogalayout.dev">Yoga</a>.</p>
+<p align="center">A layout engine for Go powered by <a href="https://yogalayout.dev">Yoga</a>.</p>
 
 ```go
 // Create a root Node
